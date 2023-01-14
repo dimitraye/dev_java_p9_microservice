@@ -13,9 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patient {
-
     private Integer id;
-
     @NotBlank(message = "firstname is mandatory")
     private String given;
     @NotBlank(message = "lastname is mandatory")
