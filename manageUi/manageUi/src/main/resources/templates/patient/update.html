@@ -81,7 +81,7 @@
                     </div>
                     <div class="card-footer">
                         <a type="button" class="btn btn-danger" href="/patients">Cancel </a>&nbsp;
-                        <button type="submit" class="btn btn-primary" th:value="${create} ? 'Create Patient' : 'Update Patient'">Create My Patient </button>
+                        <input type="submit" class="btn btn-primary" th:value="${create} ? 'Create Patient' : 'Update Patient'" value="Create My Patient"/>
                         <input type="text" th:if="*{id}" th:field="*{id}" hidden>
                     </div>
                 </div>
