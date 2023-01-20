@@ -28,10 +28,15 @@
 
         </div>
         <div class="col-sm-11">
-            <h1>Patient List</h1>
+            <h1>Note List</h1>
             <hr>
-            <a href="/patient/add" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-user-plus"></i> Add New Patient
+            Info patient
+            <hr>
+            <a th:href="@{'/note/add/' + ${patId}}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-user-plus"></i> Add New Note
+            </a>
+            <a th:href="@{'/patient/' + ${patId}}" class="btn btn-primary btn-sm" >
+                <i class="fa-solid fa-user-plus"></i> See patient folder
             </a>
             <hr>
             <!-- Faire le tableau -->
@@ -40,40 +45,28 @@
                 <thead>
                 <tr>
                     <th>Id</th>
-                    <th>firstname</th>
-                    <th>lastname</th>
-                    <th>Birthdate</th>
-                    <th>Gender</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Action</th>
+                    <th>content</th>
+                    <th>Date</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <th:block th:each="patient : ${patients}">
+                <th:block th:each="note : ${notes}">
                     <tr>
-                        <td th:text="${patient.id}"></td>
-                        <td th:text="${patient.given}"></td>
-                        <td th:text="${patient.family}"></td>
-                        <td th:text="${patient.dob}"></td>
-                        <td th:text="${patient.sex}"></td>
-                        <td th:text="${patient.address}"></td>
-                        <td th:text="${patient.phone}"></td>
-                        <td><a class="btn btn-primary" th:href="@{'/patient/' + ${patient.id}}">
+                        <td th:text="${note.id}"></td>
+                        <td th:text="${note.content}"></td>
+                        <td th:text="${note.creationDate}"></td>
+                        <td><a class="btn btn-primary" th:href="@{'/note/' + ${note.id}}">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </a>
 
-                            <a class="btn btn-info" th:href="@{'/patient/update/' + ${patient.id}}">
+                            <a class="btn btn-info" th:href="@{'/note/update/' + ${note.id}}">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
 
-                            <a class="btn btn-danger" th:href="@{'/patient/delete/' + ${patient.id}}">
+                            <a class="btn btn-danger" th:href="@{'/note/delete/' + ${note.id} + '?patId=' + ${note.patId} }">
                                 <i class="fa-solid fa-trash-can"></i>
                             </a></td>
-                        <!--
-                                                <a th:href="@{'/category/edit/' + ${category.id}}">view</a>
-                        -->
-
                     </tr>
                 </th:block>
                 </tbody>

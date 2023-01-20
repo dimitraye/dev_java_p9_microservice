@@ -1,102 +1,106 @@
 package com.example.manageUi.controller;
 
-import com.example.manageUi.model.Patient;
+import com.example.manageUi.model.Note;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
 @Slf4j
 @Controller
-public class PatientController {
+public class NoteController {
 
     private static String baseUrl = "http://localhost";
+    private static String portNote = ":8082";
+    private static String endpointNote = "/note";
+    private static String endpointPatHistory = "/patHistory";
     private static String portPatient = ":8081";
     private static String endpointPatient = "/patient";
+
     private static String urlEndpoint;
 
     ObjectMapper mapper;
 
 
-     PatientController() {
+     NoteController() {
          mapper = new ObjectMapper();
-         urlEndpoint = baseUrl + portPatient + endpointPatient;
+         urlEndpoint = baseUrl + portNote + endpointPatHistory;
      }
     /**
-     * Return the list page and the list of patient with it.
+     * Return the list page and the list of note with it.
      * @param model
      * @return list page
      */
-    @RequestMapping("/patients")
-    public String home(Model model)
+    @RequestMapping("/notes/{patId}")
+    public String home(Model model, @PathVariable Integer patId)
     {
-        String uri = urlEndpoint + "s";
+        String uri = baseUrl + portNote + endpointPatHistory + "?patId=" + patId;
 
         RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint get patients : " + uri);
-        Patient[] patients = restTemplate.getForObject(uri, Patient[].class);
+        log.info("Calling endpoint get notes : " + uri);
+        Note[] notes = restTemplate.getForObject(uri, Note[].class);
 
-        model.addAttribute("patients", patients);
-        return "patient/list";
+        model.addAttribute("notes", notes);
+        return "note/list";
     }
 
     /**
      * Send the user to the Add page.
      * @return the Add page.
      */
-    @GetMapping("/patient/add")
-    public String add(Model model, Patient patient) {
-        //Retourne l'endpoint patient/add qui affiche la page add
+    @GetMapping("/note/add/{patId}")
+    public String add(Model model, @PathVariable Integer patId) {
+        //Retourne l'endpoint note/add qui affiche la page add
+        Note note = new Note();
+        note.setPatId(patId);
         model.addAttribute("create", true);
+        model.addAttribute("note", note);
 
-        return "patient/form";
+        return "note/form";
     }
 
     /**
-     * Validate the data of the formular and add the new patient into the DB.
-     * @param patient
+     * Validate the data of the formular and add the new note into the DB.
+     * @param note
      * @param result
      * @param model
      * @return the list page.
      */
-    @PostMapping("/patient/validate")
-    public String validate(@Valid Patient patient, BindingResult result, Model model) {
+    @PostMapping("/note/validate")
+    public String validate(@Valid Note note, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("create", true);
-            return "patient/form";
+            return "note/form";
         }
-        String uri = urlEndpoint + "/add";
+        String uri = baseUrl + portNote + endpointPatHistory + "/add";
 
         RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint post patient : " + uri);
-        restTemplate.postForObject(uri, patient, Patient.class);
+        log.info("Calling endpoint post note : " + uri);
+        restTemplate.postForObject(uri, note, Note.class);
 
-        return "redirect:/patients";
+        return "redirect:/notes/" + note.getPatId();
     }
 
 
 
-    @GetMapping("/patient/{id}")
+    @GetMapping("/note/{id}")
     public String show(@PathVariable("id") Integer id, Model model) {
-        String uri = urlEndpoint + "/" + id;
+        String uri = baseUrl + portNote + endpointNote + "/" + id;
 
         RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint get patient : " + uri);
-        Patient patient = restTemplate.getForObject(uri, Patient.class);
-        model.addAttribute("patient", patient);
+        log.info("Calling endpoint get note : " + uri);
+        Note note = restTemplate.getForObject(uri, Note.class);
+        model.addAttribute("note", note);
 
-        return "patient/show";
+        return "note/show";
     }
 
     /**
@@ -105,65 +109,65 @@ public class PatientController {
      * @param model
      * @return the update page
      */
-    @GetMapping("/patient/update/{id}")
+    @GetMapping("/note/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        String uri = urlEndpoint + "/" + id;
+        String uri = baseUrl + portNote + endpointNote + "/" + id;
 
         RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint get patient : " + uri);
-        Patient patient = restTemplate.getForObject(uri, Patient.class);
-        model.addAttribute("patient", patient);
+        log.info("Calling endpoint get note : " + uri);
+        Note note = restTemplate.getForObject(uri, Note.class);
+        model.addAttribute("note", note);
         model.addAttribute("create", false);
 
-        return "patient/form";
+        return "note/form";
     }
 
     /**
      * Check the required fields and save the update
      * @param id
-     * @param patient
+     * @param note
      * @param result
      * @param model
      * @return the list page.
      */
-    @PostMapping("/patient/update/{id}")
-    public String updatePatient(@PathVariable("id") Integer id, @Valid Patient patient,
+    @PostMapping("/note/update/{id}")
+    public String updateNote(@PathVariable("id") Integer id, @Valid Note note,
                               BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update Patient and return Patient list
+        // TODO: check required fields, if valid call service to update Note and return Note list
         if (result.hasErrors()) {
             model.addAttribute("create", false);
 
-            //Retourne l'endpoint patient/update qui affiche la page update
-            return "patient/form";
+            //Retourne l'endpoint note/update qui affiche la page update
+            return "note/form";
         }
 
-        String uri = urlEndpoint + "/" + id;
+        String uri = baseUrl + portNote + endpointNote + "/" + id;
 
         RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint put patient : " + uri);
-        restTemplate.put(uri, patient, Patient.class);
+        log.info("Calling endpoint put note : " + uri);
+        restTemplate.put(uri, note, Note.class);
 
-        //Retourne l'endpoint patient/list qui affiche la page list
-        return "redirect:/patients";
+        //Retourne l'endpoint note/list qui affiche la page list
+        return "redirect:/notes/" + note.getPatId();
     }
 
     /**
-     * Delete the patient.
+     * Delete the note.
      * @param id
      * @return the list page.
      */
-    @GetMapping("/patient/delete/{id}")
-    public String deletePatient(@PathVariable("id") Integer id) {
-        String uri = urlEndpoint + "/" + id;
+    @GetMapping("/note/delete/{id}")
+    public String deleteNote(@PathVariable("id") Integer id, @RequestParam Integer patId) {
+        String uri = baseUrl + portNote + endpointNote + "/" + id;
 
         RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint delete patient : " + uri);
+        log.info("Calling endpoint delete note : " + uri);
         restTemplate.delete(uri);
 
-        //Retourne l'endpoint patient/list qui affiche la page list
-        return "redirect:/patients";
+        //Retourne l'endpoint note/list qui affiche la page list
+        return "redirect:/notes/" + patId;
     }
 }

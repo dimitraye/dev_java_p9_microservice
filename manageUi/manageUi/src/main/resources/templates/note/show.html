@@ -31,22 +31,19 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h1>Patient Details</h1>
+                    <h1>Note Details</h1>
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                        <li class="list-group-item">Id : [[${patient.id}]]</li>
-                        <li class="list-group-item">Firstname : [[${patient.given}]]</li>
-                        <li class="list-group-item">Lastname : [[${patient.family}]]</li>
-                        <li class="list-group-item">Birthdate : [[${patient.dob}]]</li>
-                        <li class="list-group-item">Gender : [[${patient.sex.label}]]</li>
-                        <li class="list-group-item">Address : [[${patient.address}]]</li>
-                        <li class="list-group-item">Phone : [[${patient.phone}]]</li>
+                        <li class="list-group-item">Id : [[${note.id}]]</li>
+                        <li class="list-group-item">Content : [[${note.content}]]</li>
+                        <li class="list-group-item">Id Patient : [[${note.patId}]]</li>
+                        <li class="list-group-item">Creation Date : [[${note.creationDate}]]</li>
                     </ul>
                 </div>
                 <div class="card-footer">
-                    <a class="btn btn-primary" href="/patients">
-                        See Patient List
+                    <a class="btn btn-primary" th:href="@{'/notes/' + ${note.patId}}">
+                        See Note List
                     </a>
                 </div>
             </div>

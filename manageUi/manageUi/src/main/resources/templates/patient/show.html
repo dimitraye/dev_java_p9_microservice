@@ -48,6 +48,10 @@
                     <a class="btn btn-primary" href="/patients">
                         See Patient List
                     </a>
+
+                    <a class="btn btn-primary" th:href="@{'/notes/' + ${patient.id}}">
+                        See Patient notes
+                    </a>
                 </div>
             </div>
         </div>

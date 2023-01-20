@@ -58,7 +58,7 @@ public class PatientController {
         //Retourne l'endpoint patient/add qui affiche la page add
         model.addAttribute("create", true);
 
-        return "patient/update";
+        return "patient/form";
     }
 
     /**
@@ -72,7 +72,7 @@ public class PatientController {
     public String validate(@Valid Patient patient, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("create", true);
-            return "patient/update";
+            return "patient/form";
         }
         String uri = urlEndpoint + "/add";
 
@@ -116,7 +116,7 @@ public class PatientController {
         model.addAttribute("patient", patient);
         model.addAttribute("create", false);
 
-        return "patient/update";
+        return "patient/form";
     }
 
     /**
@@ -135,7 +135,7 @@ public class PatientController {
             model.addAttribute("create", false);
 
             //Retourne l'endpoint patient/update qui affiche la page update
-            return "patient/update";
+            return "patient/form";
         }
 
         String uri = urlEndpoint + "/" + id;
