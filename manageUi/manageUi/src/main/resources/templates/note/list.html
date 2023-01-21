@@ -35,8 +35,11 @@
             <a th:href="@{'/note/add/' + ${patId}}" class="btn btn-primary btn-sm">
                 <i class="fa-solid fa-user-plus"></i> Add New Note
             </a>
-            <a th:href="@{'/patient/' + ${patId}}" class="btn btn-primary btn-sm" >
-                <i class="fa-solid fa-user-plus"></i> See patient folder
+            <a th:href="@{'/patient/' + ${patId}}" class="btn btn-success btn-sm" >
+                See patient folder
+            </a>
+            <a th:href="@{'/patient/' + ${patId}}" class="btn btn-warning btn-sm" >
+                Evaluate diabete risk
             </a>
             <hr>
             <!-- Faire le tableau -->
