@@ -1,5 +1,6 @@
 package com.example.manageUi.model;
 
+import com.example.manageUi.utils.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,5 +28,12 @@ public class Patient {
     private String address;
     @NotBlank(message = "Phone is mandatory")
     private String phone;
+
+    public Integer getAge(){
+        if (dob != null) {
+            return DateUtils.calculateAge(dob);
+        }
+        return null;
+    }
 
 }
