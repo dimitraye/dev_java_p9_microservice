@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -36,6 +37,10 @@ public class NoteController {
     INoteService noteService;
 
     Validator validator;
+
+    private static String baseUrl = "http://localhost";
+    private static String portPatient = ":8081";
+    private static String endpointPatient = "/patient";
 
     ObjectMapper mapper;
     NoteController() {
@@ -80,6 +85,8 @@ public class NoteController {
         return new ResponseEntity<>(noteFromDB, HttpStatus.OK);
     }
 
+
+
     @PostMapping("/patHistory/add")
     public ResponseEntity<Object> addNote(@RequestBody String body) throws JsonProcessingException {
 
@@ -88,13 +95,28 @@ public class NoteController {
         //Convert json to Note object
         Note note = mapper.readValue(noteJson, Note.class);
         note.setCreationDate(new Date());
+
         // validation before save
         ResponseEntity<Object> errorResponse = getValidationErrors(note);
         if (errorResponse != null) {
             return errorResponse;
         }
-        log.info("Saving the new note");
 
+        //TODO : Vérifi si l'id qu'on a reçu correspond à un patient
+        //endpoint menant vers
+        String uri = baseUrl + portPatient + endpointPatient + "/exist/" + note.getPatId();
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        log.info("Calling endpoint get patient : " + uri);
+        Boolean patientExist = restTemplate.getForObject(uri, Boolean.class);
+
+        //si patient n'existe pas
+        if (!patientExist) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        log.info("Saving the new note");
         return  new ResponseEntity<>(noteService.save(note), HttpStatus.CREATED);
     }
 
@@ -167,5 +189,6 @@ public class NoteController {
         }
         return null;
     }
+
 
 }
