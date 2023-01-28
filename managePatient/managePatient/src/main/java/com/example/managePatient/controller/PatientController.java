@@ -1,6 +1,7 @@
 package com.example.managePatient.controller;
 
 import com.example.managePatient.model.Patient;
+import com.example.managePatient.repository.PatientRepository;
 import com.example.managePatient.service.IPatientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,12 +16,14 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,13 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @RestController
 public class PatientController {
+    private final PatientRepository patientRepository;
     @Autowired
     IPatientService patientService;
 
     Validator validator;
 
     ObjectMapper mapper;
-    PatientController() {
+    PatientController(PatientRepository patientRepository) {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -44,6 +48,7 @@ public class PatientController {
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+        this.patientRepository = patientRepository;
     }
 
 
@@ -67,6 +72,50 @@ public class PatientController {
         //Sinon, retourner patient
         return new ResponseEntity<>(patientFromDB, HttpStatus.OK);
     }
+
+    @GetMapping("/patient/exist/{id}")
+    public ResponseEntity<Boolean> patientExist(@PathVariable Integer id){
+        Patient patientFromDB = patientService.findPatientById(id).orElse(null);
+
+        //S'il n'éxiste pas, envoie statut 404
+        if(patientFromDB == null) {
+            //log.error("Error : id Patient doesn't exist in the Data Base.");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        //log.info("Returning the patient's informations");
+        //Sinon, retourner patient
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/patients/givenfamily")
+    public ResponseEntity<List<Patient>> patientsByGivenAndFamily(@RequestParam String given, @RequestParam String family){
+        List<Patient> patients = patientService.findByGivenAndFamily(given, family);
+
+        //S'il n'éxiste pas, envoie statut 404
+
+
+        //log.info("Returning the patient's informations");
+        //Sinon, retourner patient
+        return new ResponseEntity<>(patients, HttpStatus.OK);
+    }
+
+    @GetMapping("/patient/givenfamily")
+    public ResponseEntity<Patient> patientByGivenAndFamily(@RequestParam String given, @RequestParam String family){
+        List<Patient> patients = patientService.findByGivenAndFamily(given, family);
+        if (CollectionUtils.isEmpty(patients)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        //S'il n'éxiste pas, envoie statut 404
+        Patient patient = patients.get(0);
+
+        //log.info("Returning the patient's informations");
+        //Sinon, retourner patient
+        return new ResponseEntity<>(patient, HttpStatus.OK);
+    }
+
 
     @PostMapping("/patient/add")
     public ResponseEntity<Object> addPatient(@RequestBody String body) throws JsonProcessingException {

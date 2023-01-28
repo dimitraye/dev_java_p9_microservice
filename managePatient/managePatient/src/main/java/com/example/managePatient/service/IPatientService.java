@@ -13,4 +13,6 @@ public interface IPatientService {
     List<Patient> findAll();
 
     void delete(Integer id);
+
+    List<Patient> findByGivenAndFamily(String given, String family);
 }
