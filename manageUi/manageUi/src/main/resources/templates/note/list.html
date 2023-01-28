@@ -30,7 +30,8 @@
         <div class="col-sm-11">
             <h1>Note List</h1>
             <hr>
-            Info patient
+            <span class="badge rounded-pill bg-warning text-dark">Patient summary:</span>
+            Firstname : [[${patient.given}]]  Lastname : [[${patient.family}]]  Age : [[${patient.getAge()}]]  Gender : [[${patient.sex.label}]]
             <hr>
             <a th:href="@{'/note/add/' + ${patId}}" class="btn btn-primary btn-sm">
                 <i class="fa-solid fa-user-plus"></i> Add New Note

@@ -1,6 +1,7 @@
 package com.example.manageUi.controller;
 
 import com.example.manageUi.model.Note;
+import com.example.manageUi.model.Patient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -37,16 +38,25 @@ public class NoteController {
      * @return list page
      */
     @RequestMapping("/notes/{patId}")
-    public String home(Model model, @PathVariable Integer patId)
+    public String notes(Model model, @PathVariable Integer patId)
     {
         String uri = baseUrl + portNote + endpointPatHistory + "?patId=" + patId;
+
+        //uri patient
+        String uriPatient = baseUrl + portPatient + endpointPatient + "/" + patId;
 
         RestTemplate restTemplate = new RestTemplate();
 
         log.info("Calling endpoint get notes : " + uri);
         Note[] notes = restTemplate.getForObject(uri, Note[].class);
+        //créer un patient àpartir de son id(patId)
+        log.info("Calling endpoint get patient : " + uri);
+        Patient patient = restTemplate.getForObject(uriPatient, Patient.class);
 
         model.addAttribute("notes", notes);
+        //ajouter à model
+        model.addAttribute("patient", patient);
+
         return "note/list";
     }
 
