@@ -1,6 +1,7 @@
 package com.example.manageUi.controller;
 
 import com.example.manageUi.model.Patient;
+import com.example.manageUi.service.ConfDockerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -26,8 +27,14 @@ public class PatientController {
     ObjectMapper mapper;
 
 
-     PatientController() {
+     PatientController(ConfDockerService confDockerService) {
          mapper = new ObjectMapper();
+
+         if (confDockerService.isDocker()) {
+             baseUrl = "http://host.docker.internal";
+             log.info("base_url in patientcontroller " + baseUrl);
+         }
+
          urlEndpoint = baseUrl + portPatient + endpointPatient;
      }
     /**

@@ -1,6 +1,8 @@
 package com.example.manageUi.model;
 
 import com.example.manageUi.utils.DateUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,7 @@ public class Patient {
     @NotBlank(message = "Phone is mandatory")
     private String phone;
 
+    @JsonIgnore
     public Integer getAge(){
         if (dob != null) {
             return DateUtils.calculateAge(dob);
