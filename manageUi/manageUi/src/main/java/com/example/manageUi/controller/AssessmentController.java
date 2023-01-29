@@ -1,6 +1,7 @@
 package com.example.manageUi.controller;
 
 import com.example.manageUi.model.Note;
+import com.example.manageUi.service.ConfDockerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,8 +31,14 @@ public class AssessmentController {
     ObjectMapper mapper;
 
 
-     AssessmentController() {
+     AssessmentController(ConfDockerService confDockerService) {
          mapper = new ObjectMapper();
+
+         if (confDockerService.isDocker()) {
+             baseUrl = "http://host.docker.internal";
+             log.info("base_url in asessmentcontroller " + baseUrl);
+         }
+
          urlEndpoint = baseUrl + portAssessment ;
      }
     /**
@@ -70,8 +77,8 @@ public class AssessmentController {
 
     /**
      * Validate the data of the formular and add the new note into the DB.
-     * @param note
-     * @param result
+     * @param
+     * @param
      * @param model
      * @return the list page.
      */
