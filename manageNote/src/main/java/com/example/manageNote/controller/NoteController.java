@@ -2,6 +2,7 @@ package com.example.manageNote.controller;
 
 
 import com.example.manageNote.model.Note;
+import com.example.manageNote.service.ConfDockerService;
 import com.example.manageNote.service.INoteService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,9 @@ public class NoteController {
     @Autowired
     INoteService noteService;
 
+    //@Autowired
+    //ConfDockerService confDockerService;
+
     Validator validator;
 
     private static String baseUrl = "http://localhost";
@@ -43,16 +47,20 @@ public class NoteController {
     private static String endpointPatient = "/patient";
 
     ObjectMapper mapper;
-    NoteController() {
+    NoteController(ConfDockerService confDockerService) {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.coercionConfigFor(LogicalType.Enum)
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
 
-
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
+        if (confDockerService.isDocker()) {
+            baseUrl = "http://host.docker.internal";
+            log.info("base_url in notecontroller " + baseUrl);
+        }
     }
 
 
