@@ -2,6 +2,7 @@ package com.example.manageAssesment.controller;
 
 import com.example.manageAssesment.model.Note;
 import com.example.manageAssesment.model.Patient;
+import com.example.manageAssesment.service.ConfDockerService;
 import com.example.manageAssesment.service.IAssesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,12 @@ public class AssessController {
     private static String urlEndpoint;
 
 
+    AssessController(ConfDockerService confDockerService) {
+        if (confDockerService.isDocker()) {
+            baseUrl = "http://host.docker.internal";
+            log.info("base_url in notecontroller " + baseUrl);
+        }
+    }
 
 
     @RequestMapping("assess/{patId}")

@@ -110,7 +110,7 @@ public class NoteController {
             return errorResponse;
         }
 
-        //TODO : Vérifi si l'id qu'on a reçu correspond à un patient
+        //TODO : Vérifie si l'id qu'on a reçu correspond à un patient
         //endpoint menant vers
         String uri = baseUrl + portPatient + endpointPatient + "/exist/" + note.getPatId();
 
