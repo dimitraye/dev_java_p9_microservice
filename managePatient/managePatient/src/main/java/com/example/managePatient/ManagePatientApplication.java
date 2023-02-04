@@ -2,7 +2,6 @@ package com.example.managePatient;
 
 import com.example.managePatient.model.Patient;
 import com.example.managePatient.repository.PatientRepository;
-import com.example.managePatient.service.IPatientService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,8 @@ import java.util.List;
 public class ManagePatientApplication {
 
 	@Autowired
-	PatientRepository patientRepository;
+	public PatientRepository patientRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ManagePatientApplication.class, args);
 	}
