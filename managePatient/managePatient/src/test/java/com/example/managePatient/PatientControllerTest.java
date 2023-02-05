@@ -41,12 +41,6 @@ class PatientControllerTest {
 	private ObjectMapper objectMapper;
 
 
-/*
-	@Test
-	void contextLoads() {
-	}
-*/
-
 	//4 Tests GET POST PUT DELETE (éventuellement zjouter 4 tests d'echec)
 
 	//1 - curl -d "family=TestNone&given=Test&dob=1966-12-31&sex=F&address=1 Brookside St&phone=100-222-3333"

@@ -76,6 +76,20 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+						<!-- Also checkout Maven Failsafe plugin -->
+						<include>**/*IT.java</include>
+						<include>**/*AT.java</include>
+						<include>**/*E2E.java</include>
+					</includes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
