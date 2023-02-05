@@ -86,6 +86,8 @@
 				<version>3.7.1</version>
 			</plugin>
 
+
+
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -94,7 +96,9 @@
 				<!--Partie du code à exclure de l'analyse de la couverture du test à confirmer avec Raymond-->
 				<configuration>
 					<excludes>
+
 						<exclude>com/example/managePatient/model/*.java</exclude>
+
 					</excludes>
 				</configuration>
 
@@ -113,6 +117,22 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+						<!-- Also checkout Maven Failsafe plugin -->
+						<include>**/*IT.java</include>
+						<include>**/*AT.java</include>
+						<include>**/*E2E.java</include>
+					</includes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -146,5 +166,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 </project>
