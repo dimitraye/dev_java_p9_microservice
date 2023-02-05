@@ -12,22 +12,13 @@ import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.type.LogicalType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RestController
@@ -40,22 +31,21 @@ public class NoteController {
     //@Autowired
     //ConfDockerService confDockerService;
 
-    Validator validator;
-
     private static String baseUrl = "http://localhost";
     private static String portPatient = ":8081";
     private static String endpointPatient = "/patient";
 
     ObjectMapper mapper;
+
+    //L'injection de dépendence peut se faire de pluisuers façons :
+    //La première est en utilisant @Autowired
+    //La deuxième est en mettant en paramètre dans le constructeur
     NoteController(ConfDockerService confDockerService) {
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.coercionConfigFor(LogicalType.Enum)
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
-
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
 
         if (confDockerService.isDocker()) {
             baseUrl = "http://host.docker.internal";
@@ -74,8 +64,6 @@ public class NoteController {
     public ResponseEntity<List<Note>> findAllByPatId(@RequestParam Integer patId){
         List<Note> notes = noteService.findByPatId(patId);
         return new ResponseEntity<>(notes, HttpStatus.OK);
-
-
     }
 
     @GetMapping("/note/{id}")
@@ -99,13 +87,13 @@ public class NoteController {
     public ResponseEntity<Object> addNote(@RequestBody String body) throws JsonProcessingException {
 
         //Convert request body to Json
-        String noteJson = paramTojson(body);
+        String noteJson = noteService.paramTojson(body);
         //Convert json to Note object
         Note note = mapper.readValue(noteJson, Note.class);
         note.setCreationDate(new Date());
 
         // validation before save
-        ResponseEntity<Object> errorResponse = getValidationErrors(note);
+        ResponseEntity<Object> errorResponse = noteService.getValidationErrors(note);
         if (errorResponse != null) {
             return errorResponse;
         }
@@ -114,10 +102,8 @@ public class NoteController {
         //endpoint menant vers
         String uri = baseUrl + portPatient + endpointPatient + "/exist/" + note.getPatId();
 
-        RestTemplate restTemplate = new RestTemplate();
 
-        log.info("Calling endpoint get patient : " + uri);
-        Boolean patientExist = restTemplate.getForObject(uri, Boolean.class);
+        Boolean patientExist = noteService.checkPatient(uri);
 
         //si patient n'existe pas
         if (!patientExist) {
@@ -145,7 +131,7 @@ public class NoteController {
 
 
         // validation before update
-        ResponseEntity<Object> errorResponse = getValidationErrors(note);
+        ResponseEntity<Object> errorResponse = noteService.getValidationErrors(note);
         if (errorResponse != null) {
             return errorResponse;
         }
@@ -166,36 +152,6 @@ public class NoteController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-
-    public static String paramTojson(String paramIn) {
-        if (paramIn.startsWith("{")) {
-            //in this case it is already in json format
-            return paramIn;
-        }
-        paramIn = paramIn.replaceAll("=", "\":\"");
-        paramIn = paramIn.replaceAll("&", "\",\"");
-        return "{\"" + paramIn + "\"}";
-    }
-
-
-    private ResponseEntity<Object> getValidationErrors(Note note) {
-        Set<ConstraintViolation<Note>> violations = validator.validate(note);
-        if (!violations.isEmpty()) {
-            AtomicInteger nb = new AtomicInteger(1);
-            JSONObject jsonError = new JSONObject();
-            violations.stream().forEach(v -> {
-                try {
-                    jsonError.put("Error " + nb.getAndIncrement(), v.getMessage());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            });
-            log.error(jsonError.toString());
-            return new ResponseEntity<>(jsonError.toString(), HttpStatus.BAD_REQUEST);
-        }
-        return null;
     }
 
 
