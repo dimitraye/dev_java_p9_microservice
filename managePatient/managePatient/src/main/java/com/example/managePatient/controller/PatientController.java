@@ -11,22 +11,12 @@ import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.type.LogicalType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.*;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RestController
@@ -35,7 +25,6 @@ public class PatientController {
     @Autowired
     IPatientService patientService;
 
-    Validator validator;
 
     ObjectMapper mapper;
     PatientController(PatientRepository patientRepository) {
@@ -46,8 +35,7 @@ public class PatientController {
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
 
 
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+
         this.patientRepository = patientRepository;
     }
 
@@ -104,13 +92,10 @@ public class PatientController {
 
     @GetMapping("/patient/givenfamily")
     public ResponseEntity<Patient> patientByGivenAndFamily(@RequestParam String given, @RequestParam String family){
-        List<Patient> patients = patientService.findByGivenAndFamily(given, family);
-        if (CollectionUtils.isEmpty(patients)) {
+        Patient patient = patientService.findPatientByGivenAndFamily(given, family);
+        if (patient == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        //S'il n'éxiste pas, envoie statut 404
-        Patient patient = patients.get(0);
-
         //log.info("Returning the patient's informations");
         //Sinon, retourner patient
         return new ResponseEntity<>(patient, HttpStatus.OK);
@@ -121,12 +106,12 @@ public class PatientController {
     public ResponseEntity<Object> addPatient(@RequestBody String body) throws JsonProcessingException {
 
         //Convert request body to Json
-        String patientJson = paramTojson(body);
+        String patientJson = patientService.paramTojson(body);
         //Convert json to Patient object
         Patient patient = mapper.readValue(patientJson, Patient.class);
 
         // validation before save
-        ResponseEntity<Object> errorResponse = getValidationErrors(patient);
+        ResponseEntity<Object> errorResponse = patientService.getValidationErrors(patient);
         if (errorResponse != null) {
             return errorResponse;
         }
@@ -157,7 +142,7 @@ public class PatientController {
 
 
         // validation before update
-        ResponseEntity<Object> errorResponse = getValidationErrors(patient);
+        ResponseEntity<Object> errorResponse = patientService.getValidationErrors(patient);
         if (errorResponse != null) {
             return errorResponse;
         }
@@ -181,32 +166,4 @@ public class PatientController {
     }
 
 
-    public static String paramTojson(String paramIn) {
-        if (paramIn.startsWith("{")) {
-            //in this case it is already in json format
-            return paramIn;
-        }
-        paramIn = paramIn.replaceAll("=", "\":\"");
-        paramIn = paramIn.replaceAll("&", "\",\"");
-        return "{\"" + paramIn + "\"}";
-    }
-
-
-    private ResponseEntity<Object> getValidationErrors(Patient patient) {
-        Set<ConstraintViolation<Patient>> violations = validator.validate(patient);
-        if (!violations.isEmpty()) {
-            AtomicInteger nb = new AtomicInteger(1);
-            JSONObject jsonError = new JSONObject();
-            violations.stream().forEach(v -> {
-                try {
-                    jsonError.put("Error " + nb.getAndIncrement(), v.getMessage());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            });
-            log.error(jsonError.toString());
-            return new ResponseEntity<>(jsonError.toString(), HttpStatus.BAD_REQUEST);
-        }
-        return null;
-    }
 }

@@ -80,6 +80,13 @@
 				</configuration>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7.1</version>
+			</plugin>
+
+
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -89,8 +96,9 @@
 				<!--Partie du code à exclure de l'analyse de la couverture du test à confirmer avec Raymond-->
 				<configuration>
 					<excludes>
-						<exclude>com/safetynet/alerts/dto/*DTO.*</exclude>
-						<exclude>**/config/*</exclude>
+
+						<exclude>com/example/managePatient/model/*.java</exclude>
+
 					</excludes>
 				</configuration>
 
@@ -110,6 +118,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 
 
 			<plugin>
@@ -155,7 +164,6 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-
 		</plugins>
 	</reporting>
 </project>

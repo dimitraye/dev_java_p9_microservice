@@ -17,13 +17,11 @@ import org.springframework.util.MultiValueMap;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,28 +55,29 @@ class PatientControllerTest {
 	public void shouldCreatePatient() throws Exception {
 
 		//Date creation
-		Patient patientTest1 = new Patient();
-		patientTest1 = DataTest.getPatientTest1();
-		/*patientTest.setGiven("Sahdow");
-		patientTest.setFamily("The Hedgehog");
-		patientTest.setDob(null);
-		patientTest.setSex(Gender.M);
-		patientTest.setAddress("1 Brookside St");
-		patientTest.setPhone("111-222-000");*/
-		//Data processing
+		Patient patientTest1 = DataTest.getPatientTest1();
+		String patientJson = "{" +
+				"\"given\":\"Shadow\",\n" +
+				"\"family\":\"The Hedgehog\",\n" +
+				"\"dob\":\"1999-12-25\",\n" +
+				"\"sex\":\"M\",\n" +
+				"\"address\":\"1 Brookside St\",\n" +
+				"\"phone\":\"111-222-000\"\n" +
+				"}";
 
-		//Test
+
+		when(patientService.paramTojson(anyString())).thenReturn(patientJson);
+		when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
+		when(patientService.save(patientTest1)).thenReturn(patientTest1);
+
 		mockMvc.perform(post("/patient/add").contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(patientTest1)))
 				.andExpect(status().isCreated())
 				.andDo(print());
+	}
 
-
-		/*mockMvc.perform(post("/api/tutorials").contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(tutorial)))
-				.andExpect(status().isCreated())
-				.andDo(print());*/
-
+	@Test
+	void shouldRetur404WhenCreateIfPatientNotFound() throws Exception {
 
 	}
 
@@ -94,9 +93,8 @@ class PatientControllerTest {
 		patientTest1.setPhone("111-222-000");
 
 		when(patientService.findPatientById(patientTest1.getId())).thenReturn(Optional.of(patientTest1));
-		when(patientService.save(any(Patient.class))).thenReturn(patientTest1);
 
-		mockMvc.perform(get("/patient/{id}", patientTest1.getId()))
+		mockMvc.perform(get("/patient/{id}", String.valueOf(patientTest1.getId())))
 				.andExpect(status().isOk())
 				.andDo(print());
 	}
@@ -112,9 +110,9 @@ class PatientControllerTest {
 		patientTest1.setAddress("1 Brookside St");
 		patientTest1.setPhone("111-222-000");
 
-		when(patientService.findPatientById(patientTest1.getId())).thenReturn(Optional.of(patientTest1));
-		when(patientService.save(any(Patient.class))).thenReturn(patientTest1);
-
+		//TODO : corriger le problème de bad request
+		when(patientService.findPatientById(patientTest1.getId()))
+				.thenReturn(Optional.of(patientTest1));
 		mockMvc.perform(get("/patient/exist/{id}", patientTest1.getId()))
 				.andExpect(status().isOk())
 				.andDo(print());
@@ -173,32 +171,24 @@ class PatientControllerTest {
 	}
 
 	//3 - curl https://localhost: 8081/patient/givenfamily
-	/*@Test
+	@Test
 	public void shouldGetPatientByGivenAndFamily() throws Exception {
 		//data creation
-		List<Patient> list = new ArrayList<>();
-		Patient patient1 = DataTest.getPatientTest1();
-		Patient patient2 = DataTest.getPatientTest1();
-		Patient patient3 = DataTest.getPatientTest2();
 
-		String given = "Shadow";
-		String family = "The Hedgehog";
+		Patient patient1 = DataTest.getPatientTest1();
+
+		String given = patient1.getGiven();
+		String family = patient1.getFamily();
 
 		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
 		paramsMap.add("given", given);
 		paramsMap.add("family", family);
 
-		//data processing
-		list.add(patient1);
-		list.add(patient2);
-		list.add(patient3);
-
-		when(patientService.findByGivenAndFamily(given, family)).thenReturn(list);
+		when(patientService.findPatientByGivenAndFamily(given, family)).thenReturn(patient1);
 		mockMvc.perform(get("/patient/givenfamily").params(paramsMap))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.list[0]").exists())
 				.andDo(print());
-	}*/
+	}
 
 	//4 - curl https://localhost: 8081/patient/{id}
 	@Test
@@ -222,6 +212,7 @@ class PatientControllerTest {
 		updatedPatient.setPhone("111-222-000");
 
 		when(patientService.findPatientById(patientTest1.getId())).thenReturn(Optional.of(patientTest1));
+		when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
 		when(patientService.save(any(Patient.class))).thenReturn(updatedPatient);
 
 		mockMvc.perform(put("/patient/{id}", patientTest1.getId()).contentType(MediaType.APPLICATION_JSON)
@@ -230,8 +221,11 @@ class PatientControllerTest {
 				.andExpect(jsonPath("$.id").value(updatedPatient.getId()))
 				.andExpect(jsonPath("$.given").value(updatedPatient.getGiven()))
 				.andExpect(jsonPath("$.family").value(updatedPatient.getFamily()))
+
+				//TODO : voir tests effectués sur edicalrecord (p5)
 				//.andExpect(jsonPath("$.dob").value(updatedPatient.getDob()))
 				//.andExpect(jsonPath("$.sex").value(updatedPatient.getSex()))
+
 				.andExpect(jsonPath("$.address").value(updatedPatient.getAddress()))
 				.andExpect(jsonPath("$.phone").value(updatedPatient.getPhone()))
 				.andDo(print());
@@ -247,5 +241,4 @@ class PatientControllerTest {
 				.andExpect(status().isNoContent())
 				.andDo(print());
 	}
-
 }
