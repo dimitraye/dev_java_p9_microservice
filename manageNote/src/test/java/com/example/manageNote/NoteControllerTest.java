@@ -47,32 +47,6 @@ public class NoteControllerTest {
 
 
     //1
-
-    /*@Test
-    public void shouldCreatePatient() throws Exception {
-
-        //Date creation
-        Patient patientTest1 = DataTest.getPatientTest1();
-        String patientJson = "{" +
-                "\"given\":\"Shadow\",\n" +
-                "\"family\":\"The Hedgehog\",\n" +
-                "\"dob\":\"1999-12-25\",\n" +
-                "\"sex\":\"M\",\n" +
-                "\"address\":\"1 Brookside St\",\n" +
-                "\"phone\":\"111-222-000\"\n" +
-                "}";
-
-
-        when(patientService.paramTojson(anyString())).thenReturn(patientJson);
-        when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
-        when(patientService.save(patientTest1)).thenReturn(patientTest1);
-
-        mockMvc.perform(post("/patient/add").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(patientTest1)))
-                .andExpect(status().isCreated())
-                .andDo(print());
-    }*/
-
     @Test
     public void shouldCreateNote() throws Exception {
 
