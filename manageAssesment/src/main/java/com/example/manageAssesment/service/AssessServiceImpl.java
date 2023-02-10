@@ -15,6 +15,12 @@ public class AssessServiceImpl implements IAssesService{
             "Vertige", "Rechute", "Réaction", "Anticorps");
 
 
+    public static  final String NONE = "None";
+    public static  final String BORDELINE = "Borderline";
+    public static  final String IN_DANGER = "In danger";
+    public static  final String EARLY_ONSET = "Early onset";
+    public static  final String UNKNOWN = "Unknown";
+
     @Override
     public String evaluateRisk(Patient patient, List<Note> notes) {
         int nbFactors = nbTermsInNotes(notes);
@@ -35,19 +41,19 @@ public class AssessServiceImpl implements IAssesService{
         boolean isEarlyOnset3 = patient.isOlderthan30() && nbFactors > 7;
 
         if (isNone){
-            riskLevel = "None";
+            riskLevel = NONE;
         } else if (isEarlyOnset3) {
-            riskLevel = "Early onset";
+            riskLevel = EARLY_ONSET;
         } else if (isDanger3) {
-            riskLevel = "In danger";
+            riskLevel = IN_DANGER;
         } else if (isBorderline) {
-            riskLevel = "Borderline";
+            riskLevel = BORDELINE;
         } else if (isEarlyOnset1 || isEarlyOnset2) {
-            riskLevel = "Early onset";
+            riskLevel = EARLY_ONSET;
         } else if (isDanger1 || isDanger2) {
-            riskLevel = "In danger";
+            riskLevel = IN_DANGER;
         } else {
-            riskLevel = "Unknown";
+            riskLevel = UNKNOWN;
         }
 
         return riskLevel;
