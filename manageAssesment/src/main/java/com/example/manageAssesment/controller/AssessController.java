@@ -53,7 +53,7 @@ public class AssessController {
 
         String risk = assesService.evaluateRisk(patient, List.of(notes));
         String report = assesService.generateReport(patient, risk);
-        return report;
+            return report;
     }
 
 
