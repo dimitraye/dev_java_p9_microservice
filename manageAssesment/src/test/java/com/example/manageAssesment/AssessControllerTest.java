@@ -36,7 +36,7 @@ public class AssessControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-    //2 Test
+
 
     //1
     @Test
@@ -61,7 +61,6 @@ public class AssessControllerTest {
                 .thenReturn(expectedReport);
 
         //3 - Test
-
         MvcResult result = mockMvc.perform(get("/assess/{patId}", String.valueOf(note1.getPatId())))
                 .andExpect(status().isOk())
                 //.andExpect(jsonPath("$").value(expectedReport))
