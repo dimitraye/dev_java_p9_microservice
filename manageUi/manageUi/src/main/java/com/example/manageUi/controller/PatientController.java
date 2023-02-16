@@ -135,7 +135,7 @@ public class PatientController {
      * @return the list page.
      */
     @PostMapping("/patient/update/{id}")
-    public String updatePatient(@PathVariable("id") Integer id, @Valid Patient patient,
+    public String updatePatient(@PathVariable Integer id, @Valid Patient patient,
                               BindingResult result, Model model) {
         // TODO: check required fields, if valid call service to update Patient and return Patient list
         if (result.hasErrors()) {
@@ -162,7 +162,7 @@ public class PatientController {
      * @return the list page.
      */
     @GetMapping("/patient/delete/{id}")
-    public String deletePatient(@PathVariable("id") Integer id) {
+    public String deletePatient(@PathVariable Integer id) {
         String uri = urlEndpoint + "/" + id;
 
         RestTemplate restTemplate = new RestTemplate();

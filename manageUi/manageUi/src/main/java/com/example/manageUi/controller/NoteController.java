@@ -56,7 +56,7 @@ public class NoteController {
 
         log.info("Calling endpoint get notes : " + uri);
         Note[] notes = restTemplate.getForObject(uri, Note[].class);
-        //créer un patient àpartir de son id(patId)
+        //créer un patient à partir de son id(patId)
         log.info("Calling endpoint get patient : " + uri);
         Patient patient = restTemplate.getForObject(uriPatient, Patient.class);
 
