@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-/**
- * Model that represent the note
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
