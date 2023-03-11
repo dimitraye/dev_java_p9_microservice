@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * Model that represent the patient
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
