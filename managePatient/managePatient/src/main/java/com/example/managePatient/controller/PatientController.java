@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Manage the requests linked to a Patient
+ */
 @Slf4j
 @RestController
 public class PatientController {
@@ -40,29 +43,44 @@ public class PatientController {
     }
 
 
-
+    /**
+     * Find all the patients when calling this endpoint
+     * @return a list of patients
+     */
     @GetMapping("/patients")
     public List<Patient> findAllPatients() {
         return patientService.findAll();
     }
 
+    /**
+     * Find a patient based on its Id when calling this endpoint
+     * if the patient does exist in the Data Base.
+     * @param id
+     * @return patient
+     */
     @GetMapping("/patient/{id}")
     public ResponseEntity<Patient> find(@PathVariable Integer id){
         Patient patientFromDB = patientService.findPatientById(id).orElse(null);
 
-        //S'il n'éxiste pas, envoie statut 404
+        //If the patient doesn't exist, send status 404
         if(patientFromDB == null) {
             //log.error("Error : id Patient doesn't exist in the Data Base.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         //log.info("Returning the patient's informations");
-        //Sinon, retourner patient
+        //else, return patient
         return new ResponseEntity<>(patientFromDB, HttpStatus.OK);
     }
 
+    /**
+     * Check if a patient exist based on it's Id
+     * @param id
+     * @return boolean
+     */
     @GetMapping("/patient/exist/{id}")
     public ResponseEntity<Boolean> patientExist(@PathVariable Integer id){
+        //Récupère un patient dans la BD à partir de son ID. sinon renvoie null
         Patient patientFromDB = patientService.findPatientById(id).orElse(null);
 
         //S'il n'éxiste pas, envoie statut 404
@@ -76,20 +94,27 @@ public class PatientController {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
-
-
+    /**
+     * Manage to show all patients that have the same FirstName and LastName
+     * @param given
+     * @param family
+     * @return a list of patients
+     */
     @GetMapping("/patients/givenfamily")
     public ResponseEntity<List<Patient>> patientsByGivenAndFamily(@RequestParam String given, @RequestParam String family){
         List<Patient> patients = patientService.findByGivenAndFamily(given, family);
-
-        //S'il n'éxiste pas, envoie statut 404
-
 
         //log.info("Returning the patient's informations");
         //Sinon, retourner patient
         return new ResponseEntity<>(patients, HttpStatus.OK);
     }
 
+    /**
+     * Manage to show a patient based on its firstName and lastName
+     * @param given
+     * @param family
+     * @return a patient
+     */
     @GetMapping("/patient/givenfamily")
     public ResponseEntity<Patient> patientByGivenAndFamily(@RequestParam String given, @RequestParam String family){
         Patient patient = patientService.findPatientByGivenAndFamily(given, family);
@@ -101,7 +126,12 @@ public class PatientController {
         return new ResponseEntity<>(patient, HttpStatus.OK);
     }
 
-
+    /**
+     * Manage the creation of a patient when calling this endpoint
+     * @param body
+     * @return
+     * @throws JsonProcessingException
+     */
     @PostMapping("/patient/add")
     public ResponseEntity<Object> addPatient(@RequestBody String body) throws JsonProcessingException {
 
@@ -120,7 +150,12 @@ public class PatientController {
         return  new ResponseEntity<>(patientService.save(patient), HttpStatus.CREATED);
     }
 
-
+    /**
+     * Manage the update of a patient when calling this endpoint
+     * @param id
+     * @param patient
+     * @return
+     */
     @PutMapping("/patient/{id}")
     public ResponseEntity<Object> update(@PathVariable Integer id, @RequestBody Patient patient) {
 
@@ -151,10 +186,13 @@ public class PatientController {
         return new ResponseEntity<>(patientService.save(patientFromDB), HttpStatus.OK);
     }
 
-
+    /**
+     * Manage the erasure of a patient when calling this endpoint
+     * @param id
+     * @return nothing
+     */
     @DeleteMapping("/patient/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable Integer id){
-
 
         try {
             patientService.delete(id);

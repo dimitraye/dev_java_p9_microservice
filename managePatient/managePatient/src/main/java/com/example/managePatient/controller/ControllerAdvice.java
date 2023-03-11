@@ -9,14 +9,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ *
+ */
 @RestControllerAdvice
 public class ControllerAdvice {
 
+    /**
+     *
+     * @param e
+     * @return
+     */
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<Map<String, String>> invalidFormatException(final InvalidFormatException e) {
         return error(e, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     *
+     * @param exception
+     * @param httpStatus
+     * @return
+     */
     private ResponseEntity <Map<String, String>> error(final Exception exception, final HttpStatus httpStatus) {
         final String message = Optional.ofNullable(exception.getMessage()).orElse(exception.getClass().getSimpleName());
         Map<String, String> errorMap = Map.of("error", message);
