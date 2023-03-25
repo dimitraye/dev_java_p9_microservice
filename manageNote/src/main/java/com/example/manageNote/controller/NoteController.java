@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+
+/**
+ * Manage the requests linked to a Note
+ */
 @Slf4j
 @RestController
 public class NoteController {
@@ -54,18 +58,31 @@ public class NoteController {
     }
 
 
-
+    /**
+     * Find all the notes when calling this endpoint
+     * @return a list of notes
+     */
     @GetMapping("/notes")
     public List<Note> findAllNotes() {
         return noteService.findAll();
     }
 
+    /**
+     *  Find all notes of a patient by using the patient's Id
+     * @param patId
+     * @return a list of notes
+     */
     @GetMapping("/patHistory")
     public ResponseEntity<List<Note>> findAllByPatId(@RequestParam Integer patId){
         List<Note> notes = noteService.findByPatId(patId);
         return new ResponseEntity<>(notes, HttpStatus.OK);
     }
 
+    /**
+     * Find a note based on its Id when calling this endpoint
+     * @param id
+     * @return the page that present the details of the note
+     */
     @GetMapping("/note/{id}")
     public ResponseEntity<Note> find(@PathVariable Integer id){
         Note noteFromDB = noteService.findNoteById(id).orElse(null);
@@ -82,7 +99,12 @@ public class NoteController {
     }
 
 
-
+    /**
+     * Manage the creation of a note when calling this endpoint
+     * @param body
+     * @return the page that allow to create a note
+     * @throws JsonProcessingException
+     */
     @PostMapping("/patHistory/add")
     public ResponseEntity<Object> addNote(@RequestBody String body) throws JsonProcessingException {
 
@@ -115,6 +137,12 @@ public class NoteController {
     }
 
 
+    /**
+     * Manage the update of a note when calling this endpoint
+     * @param id
+     * @param note
+     * @return the page that allow to update a note
+     */
     @PutMapping("/note/{id}")
     public ResponseEntity<Object> update(@PathVariable Integer id, @RequestBody Note note) {
 
@@ -141,6 +169,11 @@ public class NoteController {
     }
 
 
+    /**
+     * Manage the erasure of a note when calling this endpoint
+     * @param id
+     * @return the notes page
+     */
     @DeleteMapping("/note/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable Integer id){
 

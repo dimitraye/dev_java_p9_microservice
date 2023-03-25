@@ -11,6 +11,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+
+/**
+ * Model that represent the note
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

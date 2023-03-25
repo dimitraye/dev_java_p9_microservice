@@ -12,18 +12,29 @@ import static org.springframework.data.mongodb.core.FindAndModifyOptions.options
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-
+/**
+ *
+ */
 @Service
 public class SequenceGeneratorService {
 
 
     private MongoOperations mongoOperations;
 
+    /**
+     *
+     * @param mongoOperations
+     */
     @Autowired
     public SequenceGeneratorService(MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;
     }
 
+    /**
+     *
+     * @param seqName
+     * @return
+     */
     public long generateSequence(String seqName) {
 
         DatabaseSequence counter = mongoOperations.findAndModify(query(where("_id").is(seqName)),
