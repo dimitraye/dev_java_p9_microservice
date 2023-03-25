@@ -7,7 +7,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Manage database operations for a Note entity
+ */
 @Repository
 public interface NoteRepository extends MongoRepository<Note, Integer> {
+
+    /**
+     * Find all notes that have the same patId
+     * @param patId
+     * @return a list of notes
+     */
     List<Note> findByPatId(Integer patId);
 }
