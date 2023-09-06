@@ -12,6 +12,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+/**
+ * Model that represent the patient
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

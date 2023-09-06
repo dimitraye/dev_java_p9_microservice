@@ -90,7 +90,7 @@ public class PatientController {
         }
 
         //log.info("Returning the patient's informations");
-        //Sinon, retourner patient
+        //Sinon, retourner boolean et status de la requête
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 

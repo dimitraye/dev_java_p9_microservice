@@ -15,6 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
+/**
+ * Manage the requests linked to a Patient
+ */
 @Slf4j
 @Controller
 public class PatientController {
@@ -92,7 +95,12 @@ public class PatientController {
     }
 
 
-
+    /**
+     *
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/patient/{id}")
     public String show(@PathVariable("id") Integer id, Model model) {
         String uri = urlEndpoint + "/" + id;
