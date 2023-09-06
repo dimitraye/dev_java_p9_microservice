@@ -259,7 +259,7 @@ public class AssessServiceTest {
         patient.setDob(Date.valueOf("1980-12-25"));
 
 
-        List<Note> notes = List.of(note1, note2, note3, note4, note5);
+        List<Note> notes = List.of(note1, note2, note3, note4, note5, note6, note7, note8);
 
         String risk = assessService.evaluateRisk(patient, notes);
 
