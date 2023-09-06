@@ -1,6 +1,8 @@
 package com.example.manageAssesment.service;
 
+import com.example.manageAssesment.model.MedicalTerms;
 import com.example.manageAssesment.model.Note;
+import com.example.manageAssesment.model.RiskLevel;
 import com.example.manageAssesment.model.Patient;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +13,8 @@ import java.util.Set;
 @Service
 public class AssessServiceImpl implements IAssesService{
 
-    List<String> terms = List.of("Hémoglobine A1C", "Microalbumine", "Taille", "Poids", "Fumeur", "Anormal", "Anormal",
-            "Vertige", "Rechute", "Réaction", "Anticorps");
+    /*List<String> terms = List.of("Hémoglobine A1C", "Microalbumine", "Taille", "Poids", "Fumeur", "Anormal", "Anormal",
+            "Vertige", "Rechute", "Réaction", "Anticorps");*/
 
 
     public static  final String NONE = "None";
@@ -41,19 +43,19 @@ public class AssessServiceImpl implements IAssesService{
         boolean isEarlyOnset3 = patient.isOlderthan30() && nbFactors > 7;
 
         if (isNone){
-            riskLevel = NONE;
+            riskLevel = RiskLevel.NONE.getLabel();
         } else if (isEarlyOnset3) {
-            riskLevel = EARLY_ONSET;
+            riskLevel = RiskLevel.EARLY_ONSET.getLabel();
         } else if (isDanger3) {
-            riskLevel = IN_DANGER;
+            riskLevel = RiskLevel.IN_DANGER.getLabel();
         } else if (isBorderline) {
-            riskLevel = BORDELINE;
+            riskLevel = RiskLevel.BORDERLINE.getLabel();
         } else if (isEarlyOnset1 || isEarlyOnset2) {
-            riskLevel = EARLY_ONSET;
+            riskLevel = RiskLevel.EARLY_ONSET.getLabel();
         } else if (isDanger1 || isDanger2) {
-            riskLevel = IN_DANGER;
+            riskLevel = RiskLevel.IN_DANGER.getLabel();
         } else {
-            riskLevel = UNKNOWN;
+            riskLevel = RiskLevel.UNKNOWN.getLabel();
         }
 
         return riskLevel;
@@ -71,7 +73,7 @@ public class AssessServiceImpl implements IAssesService{
 
         //boucle pour trouver si un terme se trouve dans une liste note
         notes.forEach(note -> {
-            terms.forEach(term -> {
+            MedicalTerms.getAllTerms().forEach(term -> {
                 if (note.getContent().toLowerCase().contains(term.toLowerCase())) {
                     termSet.add(term);
                 }
@@ -79,5 +81,7 @@ public class AssessServiceImpl implements IAssesService{
         });
         return termSet.size();
     }
+
+
 
 }
