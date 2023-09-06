@@ -12,6 +12,9 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
+/**
+ * Manage the requests linked to an assassment
+ */
 @Slf4j
 @Controller
 public class AssessmentController {
@@ -99,7 +102,12 @@ public class AssessmentController {
     }*/
 
 
-
+    /**
+     *
+     * @param patId
+     * @param model
+     * @return
+     */
     @GetMapping("/assess/{patId}")
     public String show(@PathVariable Integer patId, Model model) {
         String uri = baseUrl + portAssessment + endpointAssessment + "/" + patId;

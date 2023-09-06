@@ -228,7 +228,7 @@ class PatientControllerTest {
 
 	@Test
 	public void shouldDeletePatient() throws Exception {
-		Integer id = 45;
+		Integer id = 45 ;
 
 		doNothing().when(patientService).delete(id);
 		mockMvc.perform(delete("/patient/{id}", id))

@@ -13,6 +13,9 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
+/**
+ * Manage the requests linked to a note
+ */
 @Slf4j
 @Controller
 public class NoteController {
@@ -106,7 +109,12 @@ public class NoteController {
     }
 
 
-
+    /**
+     *
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/note/{id}")
     public String show(@PathVariable("id") Integer id, Model model) {
         String uri = baseUrl + portNote + endpointNote + "/" + id;
