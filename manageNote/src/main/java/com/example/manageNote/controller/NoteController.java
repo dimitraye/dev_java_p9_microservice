@@ -29,22 +29,22 @@ import java.util.List;
 public class NoteController {
 
 
-    @Autowired
-    INoteService noteService;
-
-    //@Autowired
-    //ConfDockerService confDockerService;
+    private final INoteService noteService;
+    private final ConfDockerService confDockerService;
+    private final ObjectMapper mapper;
 
     private static String baseUrl = "http://localhost";
     private static String portPatient = ":8081";
     private static String endpointPatient = "/patient";
 
-    ObjectMapper mapper;
 
     //L'injection de dépendence peut se faire de pluisuers façons :
     //La première est en utilisant @Autowired
     //La deuxième est en mettant en paramètre dans le constructeur
-    NoteController(ConfDockerService confDockerService) {
+    public NoteController(INoteService noteService, ConfDockerService confDockerService) {
+        this.noteService = noteService;
+        this.confDockerService = confDockerService;
+
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

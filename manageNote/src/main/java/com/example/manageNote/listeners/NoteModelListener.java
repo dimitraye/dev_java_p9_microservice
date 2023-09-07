@@ -14,13 +14,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class NoteModelListener extends AbstractMongoEventListener<Note> {
 
-    private SequenceGeneratorService sequenceGenerator;
+    private final SequenceGeneratorService sequenceGenerator;
 
     /**
      *
      * @param sequenceGenerator
      */
-    @Autowired
     public NoteModelListener(SequenceGeneratorService sequenceGenerator) {
         this.sequenceGenerator = sequenceGenerator;
     }

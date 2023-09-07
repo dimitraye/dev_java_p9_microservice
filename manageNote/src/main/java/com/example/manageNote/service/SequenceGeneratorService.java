@@ -18,14 +18,13 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @Service
 public class SequenceGeneratorService {
 
-
-    private MongoOperations mongoOperations;
-
     /**
      *
      * @param mongoOperations
      */
-    @Autowired
+    private final MongoOperations mongoOperations;
+
+    // Injection de la dépendance via le constructeur
     public SequenceGeneratorService(MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;
     }
