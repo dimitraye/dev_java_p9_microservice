@@ -5,7 +5,6 @@ import com.example.managePatient.repository.PatientRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Service
 public class PatientServiceImpl implements IPatientService{
-    @Autowired
-    PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
+    private final Validator validator;
 
-    public Validator validator;
+    public PatientServiceImpl(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
 
-    PatientServiceImpl() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }

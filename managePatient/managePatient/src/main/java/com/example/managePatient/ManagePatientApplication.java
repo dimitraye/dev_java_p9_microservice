@@ -21,7 +21,9 @@ public class ManagePatientApplication {
 
 	@Autowired
 	public PatientRepository patientRepository;
-
+	public ManagePatientApplication(PatientRepository patientRepository) {
+		this.patientRepository = patientRepository;
+	}
 	public static void main(String[] args) {
 		SpringApplication.run(ManagePatientApplication.class, args);
 	}

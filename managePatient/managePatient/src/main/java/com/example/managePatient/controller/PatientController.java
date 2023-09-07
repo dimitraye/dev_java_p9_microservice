@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.type.LogicalType;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,21 +24,17 @@ import java.util.List;
 @RestController
 public class PatientController {
     private final PatientRepository patientRepository;
-    @Autowired
-    IPatientService patientService;
+    private final IPatientService patientService;
+    private final ObjectMapper mapper;
 
-
-    ObjectMapper mapper;
-    PatientController(PatientRepository patientRepository) {
+    public PatientController(PatientRepository patientRepository, IPatientService patientService) {
+        this.patientRepository = patientRepository;
+        this.patientService = patientService;
         mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-       mapper.coercionConfigFor(LogicalType.Enum)
+        mapper.coercionConfigFor(LogicalType.Enum)
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
-
-
-
-        this.patientRepository = patientRepository;
     }
 
 
