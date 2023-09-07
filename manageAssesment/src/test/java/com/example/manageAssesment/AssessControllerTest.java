@@ -6,6 +6,7 @@ import com.example.manageAssesment.model.Patient;
 import com.example.manageAssesment.service.AssessServiceImpl;
 import com.example.manageAssesment.service.ConfDockerService;
 import com.example.manageAssesment.service.IAssesService;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+//@AllArgsConstructor
 @WebMvcTest(AssessController.class)
 public class AssessControllerTest {
 

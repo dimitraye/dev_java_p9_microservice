@@ -4,6 +4,7 @@ import com.example.manageAssesment.model.Note;
 import com.example.manageAssesment.model.Patient;
 import com.example.manageAssesment.service.ConfDockerService;
 import com.example.manageAssesment.service.IAssesService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,12 +17,14 @@ import java.util.List;
 /**
  * Manage the requests linked to an Assessment
  */
+
+
 @Slf4j
 @RestController
 public class AssessController {
 
-    @Autowired
-    IAssesService assesService;
+    private final IAssesService assesService;
+    private final ConfDockerService confDockerService;
     private static String baseUrl = "http://localhost";
     private static String portNote = ":8082";
     private static String endpointNote = "/note";
@@ -32,13 +35,22 @@ public class AssessController {
     private static String urlEndpoint;
 
 
-    AssessController(ConfDockerService confDockerService) {
+    /*AssessController(ConfDockerService confDockerService) {
+        if (confDockerService.isDocker()) {
+            baseUrl = "http://host.docker.internal";
+            log.info("base_url in notecontroller " + baseUrl);
+        }
+    }*/
+
+    public AssessController(IAssesService assesService, ConfDockerService confDockerService) {
+        this.assesService = assesService;
+        this.confDockerService = confDockerService;
+
         if (confDockerService.isDocker()) {
             baseUrl = "http://host.docker.internal";
             log.info("base_url in notecontroller " + baseUrl);
         }
     }
-
 
     /**
      * Generate a report based on the patient's notes and informations
