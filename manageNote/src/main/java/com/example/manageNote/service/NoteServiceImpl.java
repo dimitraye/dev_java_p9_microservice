@@ -26,16 +26,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class NoteServiceImpl implements INoteService{
 
-    @Autowired
-    NoteRepository noteRepository;
+    private final NoteRepository noteRepository;
+    private final Validator validator;
 
-    Validator validator;
+    // Injection des dépendances via le constructeur
+    public NoteServiceImpl(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
 
-    NoteServiceImpl(){
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
-
     @Override
     public Note save(Note note) {
         return noteRepository.save(note);
