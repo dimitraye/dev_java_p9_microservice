@@ -4,6 +4,7 @@ import com.example.managePatient.model.Patient;
 import com.example.managePatient.repository.PatientRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+@Slf4j
 @SpringBootApplication
 public class ManagePatientApplication {
 
@@ -33,18 +35,19 @@ public class ManagePatientApplication {
 
 		return args -> {
 			List<Patient> patients = null;
-			// read json and write to db
+			log.info("reading json");
 			ObjectMapper mapper = new ObjectMapper();
 			DateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
 			mapper.setDateFormat(formater);
 			TypeReference<List<Patient>> typeReferencePatient = new TypeReference<>(){};
 			InputStream inputStream = TypeReference.class.getResourceAsStream("/data/patients.json");
 			try {
+				log.info("saving the json in the db");
 				patients = mapper.readValue(inputStream,typeReferencePatient);
 				patientRepository.saveAll(patients);
-				System.out.println("Patients Saved!");
+				log.info("Patients Saved!");
 			} catch (IOException e){
-				System.out.println("Unable to save patients: " + e.getMessage());
+				log.error("Unable to save patients: " + e.getMessage());
 			}
 		};
 	}

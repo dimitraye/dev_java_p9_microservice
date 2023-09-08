@@ -1,7 +1,6 @@
 package com.example.managePatient.service;
 
 import com.example.managePatient.model.Patient;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,10 +59,4 @@ public interface IPatientService {
      */
     String paramTojson(String paramIn);
 
-    /**
-     *
-     * @param patient
-     * @return
-     */
-    ResponseEntity<Object> getValidationErrors(Patient patient);
 }

@@ -1,12 +1,10 @@
 package com.example.manageNote.service;
 
-import com.example.manageNote.controller.NoteController;
 import com.example.manageNote.model.Note;
 import com.example.manageNote.repository.NoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
