@@ -8,13 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 public class PatientServiceTest {
 
@@ -30,7 +29,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void shouldSave() throws Exception{
+    public void shouldSave() {
         Patient patientTest1 = DataTest.getPatientTest1();
 
         patientService.save(patientTest1);
@@ -39,7 +38,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void shouldFindPatientById() throws Exception{
+    public void shouldFindPatientById() {
         Patient patientTest1 = DataTest.getPatientTest1();
 
 
@@ -48,8 +47,7 @@ public class PatientServiceTest {
         when(patientRepository.findById(1)).thenReturn(Optional.of(patientTest1));
         Patient patient = patientService.findPatientById(patientTest1.getId()).get();
 
-        /* assertEquals("15 rue des champs", firestation.getAddress());
-    assertEquals(5, firestation.getStation());*/
+
         assertEquals(patientTest1.getId(), patient.getId());
 
     }
@@ -76,8 +74,8 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void shouldDelete() throws Exception{
-        Patient patientTest1 = new Patient();
+    public void shouldDelete() {
+        Patient patientTest1;
         patientTest1 = DataTest.getPatientTest1();
         patientTest1.setId(12);
 
@@ -89,8 +87,8 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void shoulFindByGivenAndFamily() throws Exception{
-// 1 - Data Creation :
+    public void shoulFindByGivenAndFamily() {
+        // 1 - Data Creation :
         Patient patientTest1 = DataTest.getPatientTest1();
         Patient patientTest2 = DataTest.getPatientTest2();
 
@@ -112,7 +110,7 @@ public class PatientServiceTest {
 
     @Test
     public void shouldTransformParamToJson() {
-//1 - Creation data
+        //1 - Creation data
         String patientParam = "given=Shadow" +
                 "&family=The Hedgehog" +
                 "&dob=1999-12-25" +
@@ -138,23 +136,6 @@ public class PatientServiceTest {
         assertEquals(expectedJson.strip(), actualResultJson.strip());
     }
 
-    @Test
-    public void shouldGetValidationErrors () {
-        Patient patient = DataTest.getPatientTest1();
 
-        ResponseEntity responseEntity = patientService.getValidationErrors(patient);
-
-        assertNull(responseEntity);
-    }
-
-    @Test
-    public void shouldReturnErrorWhenPatientNotValidGetValidationErrors () {
-        Patient patient = DataTest.getPatientTest1();
-        patient.setAddress("");
-
-        ResponseEntity responseEntity = patientService.getValidationErrors(patient);
-
-        assertNotNull(responseEntity);
-    }
 
 }

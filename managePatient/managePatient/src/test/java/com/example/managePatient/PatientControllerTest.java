@@ -40,15 +40,9 @@ class PatientControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-
-	//4 Tests GET POST PUT DELETE (éventuellement zjouter 4 tests d'echec)
-
-	//1 - curl -d "family=TestNone&given=Test&dob=1966-12-31&sex=F&address=1 Brookside St&phone=100-222-3333"
-	// -X POST http://localhost:8081/patient/add
 	@Test
 	public void shouldCreatePatient() throws Exception {
 
-		//Date creation
 		Patient patientTest1 = DataTest.getPatientTest1();
 		String patientJson = "{" +
 				"\"given\":\"Shadow\",\n" +
@@ -61,18 +55,13 @@ class PatientControllerTest {
 
 
 		when(patientService.paramTojson(anyString())).thenReturn(patientJson);
-		when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
+		//when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
 		when(patientService.save(patientTest1)).thenReturn(patientTest1);
 
 		mockMvc.perform(post("/patient/add").contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(patientTest1)))
 				.andExpect(status().isCreated())
 				.andDo(print());
-	}
-
-	@Test
-	void shouldRetur404WhenCreateIfPatientNotFound() throws Exception {
-
 	}
 
 	@Test
@@ -104,7 +93,6 @@ class PatientControllerTest {
 		patientTest1.setAddress("1 Brookside St");
 		patientTest1.setPhone("111-222-000");
 
-		//TODO : corriger le problème de bad request
 		when(patientService.findPatientById(patientTest1.getId()))
 				.thenReturn(Optional.of(patientTest1));
 		mockMvc.perform(get("/patient/exist/{id}", patientTest1.getId()))
@@ -112,7 +100,6 @@ class PatientControllerTest {
 				.andDo(print());
 	}
 
-	//2 - curl https://localhost: 8081/patients
 	@Test
 	public void shouldGetAllPatients() throws Exception {
 		//data creation
@@ -129,14 +116,12 @@ class PatientControllerTest {
 		when(patientService.findAll()).thenReturn(list);
 
 		//test
-
 		mockMvc.perform(get("/patients"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.size()").value(list.size()))
 				.andDo(print());
 	}
 
-	//3 - curl https://localhost: 8081/patients/givenfamily
 	@Test
 	public void shouldReturnAllPatientsByGivenAndFamily() throws Exception {
 		//data creation
@@ -164,11 +149,9 @@ class PatientControllerTest {
 				.andDo(print());
 	}
 
-	//3 - curl https://localhost: 8081/patient/givenfamily
 	@Test
 	public void shouldGetPatientByGivenAndFamily() throws Exception {
 		//data creation
-
 		Patient patient1 = DataTest.getPatientTest1();
 
 		String given = patient1.getGiven();
@@ -184,7 +167,6 @@ class PatientControllerTest {
 				.andDo(print());
 	}
 
-	//4 - curl https://localhost: 8081/patient/{id}
 	@Test
 	public void ShouldUpdatePatient() throws  Exception{
 		Patient patientTest1 = new Patient();
@@ -206,7 +188,7 @@ class PatientControllerTest {
 		updatedPatient.setPhone("111-222-000");
 
 		when(patientService.findPatientById(patientTest1.getId())).thenReturn(Optional.of(patientTest1));
-		when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
+		//when(patientService.getValidationErrors(patientTest1)).thenReturn(null);
 		when(patientService.save(any(Patient.class))).thenReturn(updatedPatient);
 
 		mockMvc.perform(put("/patient/{id}", patientTest1.getId()).contentType(MediaType.APPLICATION_JSON)
@@ -215,11 +197,6 @@ class PatientControllerTest {
 				.andExpect(jsonPath("$.id").value(updatedPatient.getId()))
 				.andExpect(jsonPath("$.given").value(updatedPatient.getGiven()))
 				.andExpect(jsonPath("$.family").value(updatedPatient.getFamily()))
-
-				//TODO : voir tests effectués sur edicalrecord (p5)
-				//.andExpect(jsonPath("$.dob").value(updatedPatient.getDob()))
-				//.andExpect(jsonPath("$.sex").value(updatedPatient.getSex()))
-
 				.andExpect(jsonPath("$.address").value(updatedPatient.getAddress()))
 				.andExpect(jsonPath("$.phone").value(updatedPatient.getPhone()))
 				.andDo(print());
