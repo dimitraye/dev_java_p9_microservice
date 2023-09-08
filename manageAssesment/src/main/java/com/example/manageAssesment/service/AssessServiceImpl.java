@@ -10,12 +10,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+/**
+ * Cette classe implémente l'interface {@link IAssesService} et fournit des méthodes pour évaluer le risque
+ * de diabète chez un patient et générer un rapport en fonction des informations du patient et des notes médicales.
+ */
 @Service
 public class AssessServiceImpl implements IAssesService{
-
-    /*List<String> terms = List.of("Hémoglobine A1C", "Microalbumine", "Taille", "Poids", "Fumeur", "Anormal", "Anormal",
-            "Vertige", "Rechute", "Réaction", "Anticorps");*/
-
 
     public static  final String NONE = "None";
     public static  final String BORDELINE = "Borderline";
@@ -26,10 +27,9 @@ public class AssessServiceImpl implements IAssesService{
     @Override
     public String evaluateRisk(Patient patient, List<Note> notes) {
         int nbFactors = nbTermsInNotes(notes);
-        String riskLevel = null;
+        String riskLevel;
 
         //Cas 1
-
         boolean isNone = nbFactors == 0;
         //Cas 2
         boolean isBorderline = patient.isOlderthan30() && nbFactors  > 1;
@@ -71,7 +71,6 @@ public class AssessServiceImpl implements IAssesService{
 
         Set<String> termSet = new HashSet<>();
 
-        //boucle pour trouver si un terme se trouve dans une liste note
         notes.forEach(note -> {
             MedicalTerms.getAllTerms().forEach(term -> {
                 if (note.getContent().toLowerCase().contains(term.toLowerCase())) {
