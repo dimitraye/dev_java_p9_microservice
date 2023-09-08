@@ -1,7 +1,6 @@
 package com.example.manageNote.service;
 
 import com.example.manageNote.model.DatabaseSequence;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
@@ -13,26 +12,29 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 /**
- *
+ * Service for managing the ID sequence for notes.
  */
 @Service
 public class SequenceGeneratorService {
 
     /**
-     *
-     * @param mongoOperations
+     * MongoDB operations used to handle interactions with the database.
+     * @param mongoOperations The MongoOperations instance used to interact with MongoDB.
      */
     private final MongoOperations mongoOperations;
 
-    // Injection de la dépendance via le constructeur
+    /**
+     * Constructor for the SequenceGeneratorService class.
+     * @param mongoOperations The MongoOperations instance used to interact with MongoDB.
+     */
     public SequenceGeneratorService(MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;
     }
 
     /**
-     *
-     * @param seqName
-     * @return
+     * Generates a sequence of IDs for integer-type notes.
+     * @param seqName The name of the sequence to generate.
+     * @return The generated ID sequence.
      */
     public long generateSequence(String seqName) {
 
