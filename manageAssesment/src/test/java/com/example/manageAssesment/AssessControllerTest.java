@@ -6,16 +6,13 @@ import com.example.manageAssesment.model.Patient;
 import com.example.manageAssesment.service.AssessServiceImpl;
 import com.example.manageAssesment.service.ConfDockerService;
 import com.example.manageAssesment.service.IAssesService;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,10 +20,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@AllArgsConstructor
 @WebMvcTest(AssessController.class)
 public class AssessControllerTest {
 
@@ -65,7 +60,6 @@ public class AssessControllerTest {
         //3 - Test
         MvcResult result = mockMvc.perform(get("/assess/{patId}", String.valueOf(note1.getPatId())))
                 .andExpect(status().isOk())
-                //.andExpect(jsonPath("$").value(expectedReport))
                 .andDo(print())
                 .andReturn();
 

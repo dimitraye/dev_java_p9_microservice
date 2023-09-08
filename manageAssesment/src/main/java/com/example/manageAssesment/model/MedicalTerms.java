@@ -25,7 +25,6 @@ public enum MedicalTerms {
         return term;
     }
 
-    // Fonction pour récupérer tous les labels (termes) dans une liste
     public static Set<String> getAllTerms() {
         Set<String> terms = new HashSet<>();
         for (MedicalTerms term : values()) {

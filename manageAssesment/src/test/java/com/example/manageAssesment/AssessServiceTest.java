@@ -5,17 +5,14 @@ import com.example.manageAssesment.model.Note;
 import com.example.manageAssesment.model.Patient;
 import com.example.manageAssesment.service.AssessServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.junit.jupiter.api.Test;
-
+import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.sql.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 public class AssessServiceTest {
 
@@ -27,7 +24,6 @@ public class AssessServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    //1
     @Test
     public void shouldEvaluateRisk() {
         //1 - Data creation
@@ -47,16 +43,12 @@ public class AssessServiceTest {
 
         String actualRisk = assessService.evaluateRisk(patient, notes);
 
-        //2 - Data processing
-
-        //3 - Test
         assertEquals(expectedRisk, actualRisk);
         System.out.println("Expected Risk : " + expectedRisk);
         System.out.println("Actual Risk : " + actualRisk);
 
     }
 
-    //2
     @Test
     public void shouldReturnNbTermsInList() {
         //1 - Data creation
@@ -68,19 +60,17 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2, note3);
 
+        //2 - Data processing
         int expectedNbTerms = 2;
         int actualNbTerms = assessService.nbTermsInNotes(notes);
 
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedNbTerms, actualNbTerms);
         System.out.println("Expected Terms : " + expectedNbTerms);
         System.out.println("Actual Terms : " + actualNbTerms);
-
     }
 
-    //3
     @Test
     public void shouldGenerateReport_NONE() {
         //1 - Data creation
@@ -92,13 +82,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.NONE;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
@@ -119,13 +109,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.BORDELINE;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
@@ -148,13 +138,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2, note3);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.IN_DANGER;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
@@ -185,13 +175,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2, note3, note4, note5, note6);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.IN_DANGER;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
@@ -218,13 +208,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2, note3, note4, note5);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.EARLY_ONSET;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
@@ -261,13 +251,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2, note3, note4, note5, note6, note7, note8);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.EARLY_ONSET;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
@@ -288,13 +278,13 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2);
 
+        //2 - Data processing
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
                 " diabetes assessment is: " + assessService.BORDELINE;
 
         String actualReport = assessService.generateReport(patient, risk);
-        //2 - Data processing
 
         //3 - Test
         assertEquals(expectedReport, actualReport);
