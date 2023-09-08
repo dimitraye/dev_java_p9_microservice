@@ -3,6 +3,7 @@ package com.example.manageAssesment;
 import com.example.manageAssesment.controller.AssessController;
 import com.example.manageAssesment.model.Note;
 import com.example.manageAssesment.model.Patient;
+import com.example.manageAssesment.model.RiskLevel;
 import com.example.manageAssesment.service.AssessServiceImpl;
 import com.example.manageAssesment.service.ConfDockerService;
 import com.example.manageAssesment.service.IAssesService;
@@ -44,12 +45,11 @@ public class AssessControllerTest {
         Note note3 = DataTest.getNoteTest3();
         note2.setPatId(note1.getPatId());
         note3.setPatId(note1.getPatId());
-        List<Note> expectedNotes = List.of(note1, note2, note3);
         Patient patient = DataTest.getPatientTest1();
-        String expectedRisk = AssessServiceImpl.NONE;
+        String expectedRisk = RiskLevel.NONE.getLabel();
         String expectedReport = "Patient: Shadows The Hedgehog (age"
                 + patient.getAge() +
-                ") diabetes assessment is: " + AssessServiceImpl.NONE;
+                ") diabetes assessment is: " + RiskLevel.NONE.getLabel();
 
         //2 - Data Processing (mock service calls)
         when(assessService.evaluateRisk(any(Patient.class), anyList()))

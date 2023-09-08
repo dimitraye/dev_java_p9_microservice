@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * Cette classe fournit un service permettant de détecter si l'application s'exécute dans un environnement Docker
- * en vérifiant la valeur de la propriété "spring.profiles.active". Si la valeur contient le mot "docker", cela
- * indique que l'application s'exécute dans un conteneur Docker.
+ * This class provides a service for detecting whether the application is running in a Docker environment by
+ * checking the value of the "spring.profiles.active" property. If the value contains the word "docker," it
+ * indicates that the application is running in a Docker container.
  */
 @Service
 @Slf4j
@@ -19,10 +19,10 @@ public class ConfDockerService {
 
 
     /**
-     * Vérifie si l'application s'exécute dans un environnement Docker en analysant la valeur de la propriété
-     * "spring.profiles.active".
+     * Checks if the application is running in a Docker environment by analyzing the value of the
+     * "spring.profiles.active" property.
      *
-     * @return true si l'application s'exécute dans un environnement Docker, sinon false.
+     * @return true if the application is running in a Docker environment, otherwise false.
      */
     public boolean isDocker() {
         log.debug("activeprofile in confdockerservice : " + activeProfile);

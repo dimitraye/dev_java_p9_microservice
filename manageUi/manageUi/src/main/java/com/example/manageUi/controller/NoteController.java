@@ -52,19 +52,16 @@ public class NoteController {
     {
         String uri = baseUrl + portNote + endpointPatHistory + "?patId=" + patId;
 
-        //uri patient
         String uriPatient = baseUrl + portPatient + endpointPatient + "/" + patId;
 
         RestTemplate restTemplate = new RestTemplate();
 
         log.info("Calling endpoint get notes : " + uri);
         Note[] notes = restTemplate.getForObject(uri, Note[].class);
-        //créer un patient à partir de son id(patId)
         log.info("Calling endpoint get patient : " + uri);
         Patient patient = restTemplate.getForObject(uriPatient, Patient.class);
 
         model.addAttribute("notes", notes);
-        //ajouter à model
         model.addAttribute("patient", patient);
 
         return "note/list";
@@ -76,7 +73,6 @@ public class NoteController {
      */
     @GetMapping("/note/add/{patId}")
     public String add(Model model, @PathVariable Integer patId) {
-        //Retourne l'endpoint note/add qui affiche la page add
         Note note = new Note();
         note.setPatId(patId);
         model.addAttribute("create", true);
@@ -159,11 +155,9 @@ public class NoteController {
     @PostMapping("/note/update/{id}")
     public String updateNote(@PathVariable("id") Integer id, @Valid Note note,
                               BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update Note and return Note list
         if (result.hasErrors()) {
             model.addAttribute("create", false);
 
-            //Retourne l'endpoint note/update qui affiche la page update
             return "note/form";
         }
 
@@ -174,7 +168,6 @@ public class NoteController {
         log.info("Calling endpoint put note : " + uri);
         restTemplate.put(uri, note, Note.class);
 
-        //Retourne l'endpoint note/list qui affiche la page list
         return "redirect:/notes/" + note.getPatId();
     }
 
@@ -192,7 +185,6 @@ public class NoteController {
         log.info("Calling endpoint delete note : " + uri);
         restTemplate.delete(uri);
 
-        //Retourne l'endpoint note/list qui affiche la page list
         return "redirect:/notes/" + patId;
     }
 }

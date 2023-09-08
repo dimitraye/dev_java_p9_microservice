@@ -12,17 +12,13 @@ import java.util.Set;
 
 
 /**
- * Cette classe implémente l'interface {@link IAssesService} et fournit des méthodes pour évaluer le risque
- * de diabète chez un patient et générer un rapport en fonction des informations du patient et des notes médicales.
+ * This class implements the {@link IAssesService} interface and provides methods to evaluate the risk
+ * of diabetes in a patient and generate a report based on the patient's information and medical notes.
  */
 @Service
 public class AssessServiceImpl implements IAssesService{
 
-    public static  final String NONE = "None";
-    public static  final String BORDELINE = "Borderline";
-    public static  final String IN_DANGER = "In danger";
-    public static  final String EARLY_ONSET = "Early onset";
-    public static  final String UNKNOWN = "Unknown";
+
 
     @Override
     public String evaluateRisk(Patient patient, List<Note> notes) {

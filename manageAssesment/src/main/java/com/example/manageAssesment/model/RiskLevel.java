@@ -1,7 +1,7 @@
 package com.example.manageAssesment.model;
 
 /**
- * Cette énumération représente les niveaux de risque possibles.
+ * This Enum represents the possible risk levels
  */
 public enum RiskLevel {
     NONE("None"),

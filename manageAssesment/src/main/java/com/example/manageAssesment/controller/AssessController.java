@@ -29,16 +29,6 @@ public class AssessController {
     private static String portPatient = ":8081";
     private static String endpointPatient = "/patient";
 
-    private static String urlEndpoint;
-
-
-    /*AssessController(ConfDockerService confDockerService) {
-        if (confDockerService.isDocker()) {
-            baseUrl = "http://host.docker.internal";
-            log.info("base_url in notecontroller " + baseUrl);
-        }
-    }*/
-
     public AssessController(IAssesService assesService, ConfDockerService confDockerService) {
         this.assesService = assesService;
         this.confDockerService = confDockerService;
@@ -56,29 +46,19 @@ public class AssessController {
      */
     @RequestMapping("assess/{patId}")
     public String generateReport(@PathVariable Integer patId) {
-        //uri to access a patient
         String uriPatient = baseUrl + portPatient + endpointPatient + "/" + patId;
-
-        //
         RestTemplate restTemplate = new RestTemplate();
 
         log.info("Calling endpoint get patient : " + uriPatient);
-        //
+
         Patient patient = restTemplate.getForObject(uriPatient, Patient.class);
 
-        //uri to access the notes of a patient
         String uriNote = baseUrl + portNote + endpointPatHistory + "?patId=" + patId;
 
         log.info("Calling endpoint get notes : " + uriNote);
-        //list of all the notes of a patient
         Note[] notes = restTemplate.getForObject(uriNote, Note[].class);
-
-        //evaluate the risk of diabetes based of the notes of a patient
         String risk = assesService.evaluateRisk(patient, List.of(notes));
-        //generate a report
         String report = assesService.generateReport(patient, risk);
-            return report;
+        return report;
     }
-
-
 }
