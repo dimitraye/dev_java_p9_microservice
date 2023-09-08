@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.client.RestTemplate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,46 +21,23 @@ public class PatientControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    /*@Autowired
-    ConfDockerService confDockerService;*/
-
-    //8 tests
-
-    //1
     @Test
     public void shouldRedirectToHome() throws Exception {
-        // 1 - Creation data
-
-        //2 - Data processing
-
-        //3 - Test
         this.mockMvc
                 .perform(get("/patients"))
                 .andExpect(status().isOk());
 
     }
 
-    //2
     @Test
     public void shouldReturnAddForm() throws Exception {
-        // 1 - Creation data
-
-        //2 - Data processing
-
-        //3 - Test
         this.mockMvc
                 .perform(get("/patient/add"))
                 .andExpect(status().isOk());
     }
 
-    //3
     @Test
     public void shouldCreatPatientWhenCallingValidate() throws Exception {
-        // 1 - Creation data
-
-        //2 - Data processing
-
-        //3 - Test
         this.mockMvc
                 .perform(post("/patient/validate")
                 //.param("id", "2500")
@@ -75,7 +51,6 @@ public class PatientControllerTest {
                 .andExpect(header().string("Location", "/patients"));
     }
 
-    //4
     @Test
     public void shouldReturnShow() throws Exception {
         // 1 - Creation data
@@ -85,11 +60,9 @@ public class PatientControllerTest {
 
         Patient patient = DataTest.getPatientTest1();
 
-        //log.info("Calling endpoint post patient : " + uri);
         Patient patientFromDB = restTemplate.postForObject(uri, patient, Patient.class);
-        //2 - Data processing
 
-        //3 - Test
+        //2 - Test
         this.mockMvc
                 .perform(get("/patient/{id}", String.valueOf(patientFromDB.getId())))
                 .andExpect(status().isOk());
@@ -97,7 +70,6 @@ public class PatientControllerTest {
 
     }
 
-    //5
     @Test
     public void shouldReturnUpdateForm() throws Exception {
         // 1 - Creation data
@@ -107,17 +79,14 @@ public class PatientControllerTest {
 
         Patient patient = DataTest.getPatientTest1();
 
-        //log.info("Calling endpoint post patient : " + uri);
         Patient patientFromDB = restTemplate.postForObject(uri, patient, Patient.class);
-        //2 - Data processing
 
-        //3 - Test
+        //2 - Test
         this.mockMvc
                 .perform(get("/patient/update/{id}", String.valueOf(patientFromDB.getId())))
                 .andExpect(status().isOk());
     }
 
-    //6
     @Test
     public void shouldUpdatePatientAfterCheckUpdateForm() throws Exception {
         // 1 - Creation data
@@ -127,11 +96,9 @@ public class PatientControllerTest {
 
         Patient patient = DataTest.getPatientTest1();
 
-        //log.info("Calling endpoint post patient : " + uri);
         Patient patientFromDB = restTemplate.postForObject(uri, patient, Patient.class);
-        //2 - Data processing
 
-        //3 - Test
+        //2 - Test
         this.mockMvc
                 .perform(post("/patient/update/{id}", String.valueOf(patientFromDB.getId()))
                         .param("given", "Dayle")
@@ -144,7 +111,6 @@ public class PatientControllerTest {
                 .andExpect(header().string("Location", "/patients"));
     }
 
-    //7
     @Test
     public void shouldReturnDelete() throws Exception {
         // 1 - Creation data
@@ -154,20 +120,14 @@ public class PatientControllerTest {
 
         Patient patient = DataTest.getPatientTest1();
 
-        //log.info("Calling endpoint post patient : " + uri);
         Patient patientFromDB = restTemplate.postForObject(uri, patient, Patient.class);
-        //2 - Data processing
 
-        //3 - Test
-
-
+        //2 - Test
         this.mockMvc
                 .perform(get("/patient/delete/{id}", String.valueOf(patientFromDB.getId())))
-                .andExpect(status().is3xxRedirection())
-                /*.andExpect(model().attributeExists("customers"))
-                .andExpect(model().attributeExists("customerFormObject"))*/;
+                .andExpect(status().is3xxRedirection());
+
     }
 
-    //8
 
 }

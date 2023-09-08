@@ -145,11 +145,9 @@ public class PatientController {
     @PostMapping("/patient/update/{id}")
     public String updatePatient(@PathVariable Integer id, @Valid Patient patient,
                               BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update Patient and return Patient list
         if (result.hasErrors()) {
             model.addAttribute("create", false);
 
-            //Retourne l'endpoint patient/update qui affiche la page update
             return "patient/form";
         }
 
@@ -159,8 +157,6 @@ public class PatientController {
 
         log.info("Calling endpoint put patient : " + uri);
         restTemplate.put(uri, patient, Patient.class);
-
-        //Retourne l'endpoint patient/list qui affiche la page list
         return "redirect:/patients";
     }
 
@@ -178,7 +174,6 @@ public class PatientController {
         log.info("Calling endpoint delete patient : " + uri);
         restTemplate.delete(uri);
 
-        //Retourne l'endpoint patient/list qui affiche la page list
         return "redirect:/patients";
     }
 }

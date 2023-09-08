@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * Model that represent the patient
+ * Model that represents the patient
  */
 @Data
 @NoArgsConstructor

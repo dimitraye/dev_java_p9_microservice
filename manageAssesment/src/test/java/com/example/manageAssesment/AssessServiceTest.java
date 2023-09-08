@@ -3,6 +3,7 @@ package com.example.manageAssesment;
 import com.example.manageAssesment.model.Gender;
 import com.example.manageAssesment.model.Note;
 import com.example.manageAssesment.model.Patient;
+import com.example.manageAssesment.model.RiskLevel;
 import com.example.manageAssesment.service.AssessServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ public class AssessServiceTest {
 
         List<Note> notes = List.of(note1, note2, note3);
 
-        String expectedRisk = assessService.IN_DANGER;
+        String expectedRisk = RiskLevel.IN_DANGER.getLabel();
 
         String actualRisk = assessService.evaluateRisk(patient, notes);
 
@@ -86,7 +87,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.NONE;
+                " diabetes assessment is: " + RiskLevel.NONE.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 
@@ -113,7 +114,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.BORDELINE;
+                " diabetes assessment is: " + RiskLevel.BORDERLINE.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 
@@ -142,7 +143,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.IN_DANGER;
+                " diabetes assessment is: " + RiskLevel.IN_DANGER.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 
@@ -179,7 +180,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.IN_DANGER;
+                " diabetes assessment is: " + RiskLevel.IN_DANGER.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 
@@ -212,7 +213,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.EARLY_ONSET;
+                " diabetes assessment is: " + RiskLevel.EARLY_ONSET.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 
@@ -255,7 +256,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.EARLY_ONSET;
+                " diabetes assessment is: " + RiskLevel.EARLY_ONSET.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 
@@ -282,7 +283,7 @@ public class AssessServiceTest {
         String risk = assessService.evaluateRisk(patient, notes);
 
         String expectedReport = "Patient: " + patient.getGiven() + " " + patient.getFamily() + " (age " + patient.getAge() + ")" +
-                " diabetes assessment is: " + assessService.BORDELINE;
+                " diabetes assessment is: " + RiskLevel.BORDERLINE.getLabel();
 
         String actualReport = assessService.generateReport(patient, risk);
 

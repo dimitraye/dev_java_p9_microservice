@@ -20,7 +20,7 @@ public interface IAssesService {
     String evaluateRisk(Patient patient,List<Note> notes);
 
     /**
-     * Geberate a report based on the risk of diabetese and the
+     * Generate a report based on the risk of diabetese and the
      * patient's informations.
      * @param patient
      * @param risk
