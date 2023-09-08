@@ -42,15 +42,9 @@ public class NoteControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-    //6 tests
-
-
-    //1
     @Test
     public void shouldCreateNote() throws Exception {
 
-        //Date creation
         Note noteTest1 = DataTest.getNoteTest1();
         String noteJson = "{" +
                 "\"patId\":\"1\"," +
@@ -59,7 +53,6 @@ public class NoteControllerTest {
 
 
         when(noteService.paramTojson(anyString())).thenReturn(noteJson);
-        when(noteService.getValidationErrors(noteTest1)).thenReturn(null);
         when(noteService.checkPatient(anyString())).thenReturn(true);
         when(noteService.save(noteTest1)).thenReturn(noteTest1);
 
@@ -86,7 +79,6 @@ public class NoteControllerTest {
         when(noteService.findAll()).thenReturn(list);
 
         //test
-
         mockMvc.perform(get("/notes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(list.size()))
@@ -141,7 +133,6 @@ public class NoteControllerTest {
 
 
         when(noteService.findNoteById(noteTest1.getId())).thenReturn(Optional.of(noteTest1));
-        when(noteService.getValidationErrors(noteTest1)).thenReturn(null);
         when(noteService.save(any(Note.class))).thenReturn(updatedNote);
 
         mockMvc.perform(put("/note/{id}", noteTest1.getId()).contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +144,6 @@ public class NoteControllerTest {
 
     }
 
-
     @Test
     public void shouldDeleteNote() throws Exception {
         Integer id = 95;
@@ -163,7 +153,4 @@ public class NoteControllerTest {
                 .andExpect(status().isNoContent())
                 .andDo(print());
     }
-
-
-
 }

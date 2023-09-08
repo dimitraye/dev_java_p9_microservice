@@ -2,20 +2,18 @@ package com.example.manageNote;
 
 import com.example.manageNote.model.Note;
 import com.example.manageNote.repository.NoteRepository;
-import com.example.manageNote.service.ConfDockerService;
 import com.example.manageNote.service.NoteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class NoteServiceTest {
@@ -36,7 +34,7 @@ public class NoteServiceTest {
     //6 methods
 
     @Test
-    public void shouldSave() throws Exception{
+    public void shouldSave() {
         Note noteTest1 = DataTest.getNoteTest1();
 
         noteService.save(noteTest1);
@@ -45,7 +43,7 @@ public class NoteServiceTest {
     }
 
     @Test
-    public void shouldFindAll() throws Exception{
+    public void shouldFindAll() {
 
         List<Note> list = new ArrayList<>();
         Note noteTest1 = DataTest.getNoteTest1();
@@ -67,7 +65,7 @@ public class NoteServiceTest {
     }
 
     @Test
-    public void shouldFindNoteById() throws Exception{
+    public void shouldFindNoteById() {
         Note noteTest1 = DataTest.getNoteTest1();
 
         noteTest1.setId(1);
@@ -79,7 +77,7 @@ public class NoteServiceTest {
     }
 
     @Test
-    public void shouldFindNoteByPatId() throws Exception{
+    public void shouldFindNoteByPatId() {
         Note noteTest1 = DataTest.getNoteTest1();
         Note noteTest2 = DataTest.getNoteTest2();
 
@@ -97,7 +95,7 @@ public class NoteServiceTest {
     }
 
     @Test
-    public void shouldDelete() throws Exception{
+    public void shouldDelete() {
         Note noteTest1 = DataTest.getNoteTest1();
 
         noteService.save(noteTest1);
@@ -110,7 +108,7 @@ public class NoteServiceTest {
 
     @Test
     public void shouldTransformParamToJson() {
-//1 - Creation data
+        //1 - Creation data
         String noteParam = "content=obese";
 
         String expectedJson = "{" +
@@ -124,25 +122,6 @@ public class NoteServiceTest {
         String actualResultJson = noteService.paramTojson(noteParam);
 
         assertEquals(expectedJson.strip(), actualResultJson.strip());
-    }
-
-    @Test
-    public void shouldGetValidationErrors () {
-        Note note = DataTest.getNoteTest1();
-
-        ResponseEntity responseEntity = noteService.getValidationErrors(note);
-
-        assertNull(responseEntity);
-    }
-
-    @Test
-    public void shouldReturnErrorWhenPatientNotValidGetValidationErrors () {
-        Note note = DataTest.getNoteTest1();
-        note.setContent("");
-
-        ResponseEntity responseEntity = noteService.getValidationErrors(note);
-
-        assertNotNull(responseEntity);
     }
 
 }

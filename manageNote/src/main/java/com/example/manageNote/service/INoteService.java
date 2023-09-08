@@ -51,12 +51,6 @@ public interface INoteService {
      */
     String paramTojson(String paramIn);
 
-    /**
-     *
-     * @param note
-     * @return
-     */
-    ResponseEntity<Object> getValidationErrors(Note note);
 
     /**
      *
