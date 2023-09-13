@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">managePatient</a> &gt; <a href="index.source.html" class="el_package">com.example.managePatient.service</a> &gt; <span class="el_source">PatientServiceImpl.java</span></div><h1>PatientServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.managePatient.service;
+
+import com.example.managePatient.model.Patient;
+import com.example.managePatient.repository.PatientRepository;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Optional;
+
+<span class="fc" id="L13">@AllArgsConstructor</span>
+<span class="fc" id="L14">@Slf4j</span>
+@Service
+public class PatientServiceImpl implements IPatientService{
+    private final PatientRepository patientRepository;
+
+
+
+    @Override
+    public Patient save(Patient patient) {
+<span class="fc" id="L23">        return patientRepository.save(patient);</span>
+    }
+
+    @Override
+    public Optional&lt;Patient&gt; findPatientById(Integer id) {
+<span class="fc" id="L28">        return patientRepository.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Patient&gt; findAll() {
+<span class="fc" id="L33">        return patientRepository.findAll();</span>
+    }
+
+    @Override
+    public void delete(Integer id) {
+<span class="fc" id="L38">        patientRepository.deleteById(id);</span>
+<span class="fc" id="L39">    }</span>
+
+
+    @Override
+    public List&lt;Patient&gt; findByGivenAndFamily(String given, String family) {
+<span class="fc" id="L44">        return patientRepository.findByGivenIgnoreCaseAndFamilyIgnoreCase(given, family);</span>
+    }
+
+    @Override
+    public Patient findPatientByGivenAndFamily(String given, String family) {
+<span class="nc" id="L49">         List&lt;Patient&gt; patients = findByGivenAndFamily(given, family);</span>
+
+<span class="nc bnc" id="L51" title="All 2 branches missed.">         if (!CollectionUtils.isEmpty(patients)) {</span>
+<span class="nc" id="L52">             return patients.get(0);</span>
+         }
+<span class="nc" id="L54">        return null;</span>
+    }
+
+    @Override
+    public String paramTojson(String paramIn) {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (paramIn.startsWith(&quot;{&quot;)) {</span>
+<span class="nc" id="L60">            log.info(&quot;Param already in Json format&quot;);</span>
+<span class="nc" id="L61">            return paramIn;</span>
+        }
+<span class="fc" id="L63">        paramIn = paramIn.replaceAll(&quot;=&quot;, &quot;\&quot;:\&quot;&quot;);</span>
+<span class="fc" id="L64">        paramIn = paramIn.replaceAll(&quot;&amp;&quot;, &quot;\&quot;,\&quot;&quot;);</span>
+<span class="fc" id="L65">        return &quot;{\&quot;&quot; + paramIn + &quot;\&quot;}&quot;;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

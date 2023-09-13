@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Patient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">managePatient</a> &gt; <a href="index.source.html" class="el_package">com.example.managePatient.model</a> &gt; <span class="el_source">Patient.java</span></div><h1>Patient.java</h1><pre class="source lang-java linenums">package com.example.managePatient.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
+
+/**
+ * Model that represent the patient
+ */
+<span class="pc bpc" id="L15" title="42 of 62 branches missed.">@Data</span>
+<span class="fc" id="L16">@NoArgsConstructor</span>
+<span class="nc" id="L17">@AllArgsConstructor</span>
+@Entity
+public class Patient {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, nullable = false)
+<span class="fc" id="L23">    private Integer id;</span>
+
+    @NotBlank(message = &quot;firstname is mandatory&quot;)
+<span class="fc" id="L26">    private String given;</span>
+    @NotBlank(message = &quot;lastname is mandatory&quot;)
+<span class="fc" id="L28">    private String family;</span>
+    @NotNull(message = &quot;Date of Birth is mandatory&quot;)
+<span class="fc" id="L30">    private Date dob;</span>
+    @NotNull(message = &quot;Gender is mandatory&quot;)
+    @Enumerated(EnumType.STRING)
+<span class="fc" id="L33">    private Gender sex;</span>
+    @NotBlank(message = &quot;Address is mandatory&quot;)
+<span class="fc" id="L35">    private String address;</span>
+    @NotBlank(message = &quot;Phone is mandatory&quot;)
+<span class="fc" id="L37">    private String phone;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
