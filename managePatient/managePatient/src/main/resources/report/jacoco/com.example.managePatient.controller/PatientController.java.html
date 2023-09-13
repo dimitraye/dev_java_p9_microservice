@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">managePatient</a> &gt; <a href="index.source.html" class="el_package">com.example.managePatient.controller</a> &gt; <span class="el_source">PatientController.java</span></div><h1>PatientController.java</h1><pre class="source lang-java linenums">package com.example.managePatient.controller;
+
+import com.example.managePatient.model.Patient;
+import com.example.managePatient.repository.PatientRepository;
+import com.example.managePatient.service.IPatientService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
+import com.fasterxml.jackson.databind.type.LogicalType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Manage the requests linked to a Patient
+ */
+<span class="fc" id="L31">@Slf4j</span>
+@RestController
+
+public class PatientController {
+    private final PatientRepository patientRepository;
+    private final IPatientService patientService;
+    private final ObjectMapper mapper;
+
+    private final Validator validator;
+
+
+<span class="fc" id="L42">    public PatientController(PatientRepository patientRepository, IPatientService patientService) {</span>
+<span class="fc" id="L43">        this.patientRepository = patientRepository;</span>
+<span class="fc" id="L44">        this.patientService = patientService;</span>
+<span class="fc" id="L45">        mapper = new ObjectMapper();</span>
+<span class="fc" id="L46">        mapper.registerModule(new JavaTimeModule());</span>
+<span class="fc" id="L47">        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);</span>
+<span class="fc" id="L48">        mapper.coercionConfigFor(LogicalType.Enum)</span>
+<span class="fc" id="L49">                .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);</span>
+
+<span class="fc" id="L51">        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();</span>
+<span class="fc" id="L52">        validator = factory.getValidator();</span>
+<span class="fc" id="L53">    }</span>
+
+
+    /**
+     * Find all the patients when calling this endpoint
+     * @return a list of patients
+     */
+    @GetMapping(&quot;/patients&quot;)
+    public List&lt;Patient&gt; findAllPatients() {
+<span class="fc" id="L62">        return patientService.findAll();</span>
+    }
+
+    /**
+     * Find a patient based on its Id when calling this endpoint
+     * if the patient does exist in the Data Base.
+     * @param id
+     * @return patient
+     */
+    @GetMapping(&quot;/patient/{id}&quot;)
+    public ResponseEntity&lt;Patient&gt; find(@PathVariable Integer id){
+<span class="fc" id="L73">        Patient patientFromDB = patientService.findPatientById(id).orElse(null);</span>
+
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if(patientFromDB == null) {</span>
+<span class="nc" id="L76">            log.error(&quot;Error : id Patient doesn't exist in the Data Base.&quot;);</span>
+<span class="nc" id="L77">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="fc" id="L80">        log.info(&quot;Returning the patient's informations&quot;);</span>
+<span class="fc" id="L81">        return new ResponseEntity&lt;&gt;(patientFromDB, HttpStatus.OK);</span>
+    }
+
+    /**
+     * Check if a patient exist based on it's Id
+     * @param id
+     * @return boolean
+     */
+    @GetMapping(&quot;/patient/exist/{id}&quot;)
+    public ResponseEntity&lt;Boolean&gt; patientExist(@PathVariable Integer id){
+<span class="fc" id="L91">        Patient patientFromDB = patientService.findPatientById(id).orElse(null);</span>
+
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if(patientFromDB == null) {</span>
+<span class="nc" id="L94">            log.error(&quot;Error : id Patient doesn't exist in the Data Base.&quot;);</span>
+<span class="nc" id="L95">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="fc" id="L98">        log.info(&quot;Returning the patient's informations&quot;);</span>
+<span class="fc" id="L99">        return new ResponseEntity&lt;&gt;(true, HttpStatus.OK);</span>
+    }
+
+    /**
+     * Manage to show all patients that have the same FirstName and LastName
+     * @param given
+     * @param family
+     * @return a list of patients
+     */
+    @GetMapping(&quot;/patients/givenfamily&quot;)
+    public ResponseEntity&lt;List&lt;Patient&gt;&gt; patientsByGivenAndFamily(@RequestParam String given, @RequestParam String family){
+<span class="fc" id="L110">        List&lt;Patient&gt; patients = patientService.findByGivenAndFamily(given, family);</span>
+
+<span class="fc" id="L112">        log.info(&quot;Returning the patient's informations&quot;);</span>
+<span class="fc" id="L113">        return new ResponseEntity&lt;&gt;(patients, HttpStatus.OK);</span>
+    }
+
+    /**
+     * Manage to show a patient based on its firstName and lastName
+     * @param given
+     * @param family
+     * @return a patient
+     */
+    @GetMapping(&quot;/patient/givenfamily&quot;)
+    public ResponseEntity&lt;Patient&gt; patientByGivenAndFamily(@RequestParam String given, @RequestParam String family){
+<span class="fc" id="L124">        Patient patient = patientService.findPatientByGivenAndFamily(given, family);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (patient == null) {</span>
+<span class="nc" id="L126">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+<span class="fc" id="L128">        log.info(&quot;Returning the patient's informations&quot;);</span>
+<span class="fc" id="L129">        return new ResponseEntity&lt;&gt;(patient, HttpStatus.OK);</span>
+    }
+
+    /**
+     * Manage the creation of a patient when calling this endpoint
+     * @param body
+     * @return
+     * @throws JsonProcessingException
+     */
+    @PostMapping(&quot;/patient/add&quot;)
+    public ResponseEntity&lt;Object&gt; addPatient(@RequestBody String body) throws JsonProcessingException {
+
+<span class="fc" id="L141">        String patientJson = patientService.paramTojson(body);</span>
+<span class="fc" id="L142">        Patient patient = mapper.readValue(patientJson, Patient.class);</span>
+
+<span class="fc" id="L144">        log.info(&quot;Validation before save&quot;);</span>
+<span class="fc" id="L145">        ResponseEntity&lt;Object&gt; errorResponse = getValidationErrors(patient);</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (errorResponse != null) {</span>
+<span class="nc" id="L147">            return errorResponse;</span>
+        }
+<span class="fc" id="L149">        log.info(&quot;Saving the new patient&quot;);</span>
+
+<span class="fc" id="L151">        return  new ResponseEntity&lt;&gt;(patientService.save(patient), HttpStatus.CREATED);</span>
+    }
+
+    /**
+     * Manage the update of a patient when calling this endpoint
+     * @param id
+     * @param patient
+     * @return
+     */
+    @PutMapping(&quot;/patient/{id}&quot;)
+    public ResponseEntity&lt;Object&gt; update(@PathVariable Integer id, @RequestBody Patient patient) {
+
+<span class="fc" id="L163">        Patient patientFromDB = patientService.findPatientById(id).get();</span>
+
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if(patientFromDB == null) {</span>
+<span class="nc" id="L166">            log.error(&quot;Error : Patient already  exist in the Data Base.&quot;);</span>
+<span class="nc" id="L167">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+<span class="fc" id="L169">        log.debug(&quot;Set properties in the object patientFromDB.&quot;);</span>
+<span class="fc" id="L170">        patientFromDB.setAddress(patient.getAddress());</span>
+<span class="fc" id="L171">        patientFromDB.setGiven(patient.getGiven());</span>
+<span class="fc" id="L172">        patientFromDB.setFamily(patient.getFamily());</span>
+<span class="fc" id="L173">        patientFromDB.setPhone(patient.getPhone());</span>
+<span class="fc" id="L174">        patientFromDB.setSex(patient.getSex());</span>
+<span class="fc" id="L175">        patientFromDB.setDob(patient.getDob());</span>
+
+
+<span class="fc" id="L178">        log.info(&quot;validation before update&quot;);</span>
+<span class="fc" id="L179">        ResponseEntity&lt;Object&gt; errorResponse = getValidationErrors(patient);</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if (errorResponse != null) {</span>
+<span class="nc" id="L181">            return errorResponse;</span>
+        }
+
+<span class="fc" id="L184">        log.info(&quot;Updating a patient&quot;);</span>
+<span class="fc" id="L185">        return new ResponseEntity&lt;&gt;(patientService.save(patientFromDB), HttpStatus.OK);</span>
+    }
+
+    /**
+     * Manage the erasure of a patient when calling this endpoint
+     * @param id
+     * @return nothing
+     */
+    @DeleteMapping(&quot;/patient/{id}&quot;)
+    public ResponseEntity&lt;HttpStatus&gt; delete(@PathVariable Integer id){
+
+        try {
+<span class="fc" id="L197">            patientService.delete(id);</span>
+<span class="fc" id="L198">            log.info(&quot;Person deleted&quot;);</span>
+<span class="fc" id="L199">            return new ResponseEntity&lt;&gt;(HttpStatus.NO_CONTENT);</span>
+<span class="nc" id="L200">        } catch (Exception e) {</span>
+<span class="nc" id="L201">            return new ResponseEntity&lt;&gt;(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+        }
+    }
+
+
+
+    public ResponseEntity&lt;Object&gt; getValidationErrors(Patient patient) {
+<span class="fc" id="L208">        Set&lt;ConstraintViolation&lt;Patient&gt;&gt; violations = validator.validate(patient);</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (!violations.isEmpty()) {</span>
+<span class="nc" id="L210">            AtomicInteger nb = new AtomicInteger(1);</span>
+<span class="nc" id="L211">            JSONObject jsonError = new JSONObject();</span>
+<span class="nc" id="L212">            violations.stream().forEach(v -&gt; {</span>
+                try {
+<span class="nc" id="L214">                    jsonError.put(&quot;Error &quot; + nb.getAndIncrement(), v.getMessage());</span>
+<span class="nc" id="L215">                } catch (JSONException e) {</span>
+<span class="nc" id="L216">                    e.printStackTrace();</span>
+<span class="nc" id="L217">                }</span>
+<span class="nc" id="L218">            });</span>
+<span class="nc" id="L219">            log.error(jsonError.toString());</span>
+<span class="nc" id="L220">            return new ResponseEntity&lt;&gt;(jsonError.toString(), HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L222">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
