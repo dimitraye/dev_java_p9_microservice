@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+manageNote,com.example.manageNote.service,ConfDockerService,20,4,4,0,3,1,4,1,2,1
+manageNote,com.example.manageNote.service,NoteServiceImpl,26,47,1,1,6,13,3,7,2,7
+manageNote,com.example.manageNote.service,SequenceGeneratorService,37,0,2,0,6,0,3,0,2,0
+manageNote,com.example.manageNote.model,DatabaseSequence,106,0,16,0,4,0,17,0,9,0
+manageNote,com.example.manageNote.model,Note,101,109,26,12,1,6,20,13,2,12
+manageNote,com.example.manageNote,ManageNoteApplication,5,3,0,0,2,1,1,1,1,1
+manageNote,com.example.manageNote.controller,NoteController,76,207,7,7,21,51,8,9,1,9
+manageNote,com.example.manageNote.listeners,NoteModelListener,29,0,4,0,6,0,4,0,2,0
