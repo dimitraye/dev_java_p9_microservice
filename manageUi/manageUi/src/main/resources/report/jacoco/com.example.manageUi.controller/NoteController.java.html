@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NoteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageUi</a> &gt; <a href="index.source.html" class="el_package">com.example.manageUi.controller</a> &gt; <span class="el_source">NoteController.java</span></div><h1>NoteController.java</h1><pre class="source lang-java linenums">package com.example.manageUi.controller;
+
+import com.example.manageUi.model.Note;
+import com.example.manageUi.model.Patient;
+import com.example.manageUi.service.ConfDockerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import javax.validation.Valid;
+
+/**
+ * Manage the requests linked to a note
+ */
+<span class="fc" id="L19">@Slf4j</span>
+@Controller
+public class NoteController {
+
+<span class="fc" id="L23">    private static String baseUrl = &quot;http://localhost&quot;;</span>
+<span class="fc" id="L24">    private static String portNote = &quot;:8082&quot;;</span>
+<span class="fc" id="L25">    private static String endpointNote = &quot;/note&quot;;</span>
+<span class="fc" id="L26">    private static String endpointPatHistory = &quot;/patHistory&quot;;</span>
+<span class="fc" id="L27">    private static String portPatient = &quot;:8081&quot;;</span>
+<span class="fc" id="L28">    private static String endpointPatient = &quot;/patient&quot;;</span>
+
+    private static String urlEndpoint;
+
+    ObjectMapper mapper;
+
+
+<span class="fc" id="L35">     NoteController(ConfDockerService confDockerService) {</span>
+<span class="fc" id="L36">         mapper = new ObjectMapper();</span>
+
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">         if (confDockerService.isDocker()) {</span>
+<span class="nc" id="L39">             baseUrl = &quot;http://host.docker.internal&quot;;</span>
+<span class="nc" id="L40">             log.info(&quot;base_url in notecontroller &quot; + baseUrl);</span>
+         }
+
+<span class="fc" id="L43">         urlEndpoint = baseUrl + portNote + endpointPatHistory;</span>
+<span class="fc" id="L44">     }</span>
+    /**
+     * Return the list page and the list of note with it.
+     * @param model
+     * @return list page
+     */
+    @RequestMapping(&quot;/notes/{patId}&quot;)
+    public String notes(Model model, @PathVariable Integer patId)
+    {
+<span class="fc" id="L53">        String uri = baseUrl + portNote + endpointPatHistory + &quot;?patId=&quot; + patId;</span>
+
+        //uri patient
+<span class="fc" id="L56">        String uriPatient = baseUrl + portPatient + endpointPatient + &quot;/&quot; + patId;</span>
+
+<span class="fc" id="L58">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L60">        log.info(&quot;Calling endpoint get notes : &quot; + uri);</span>
+<span class="fc" id="L61">        Note[] notes = restTemplate.getForObject(uri, Note[].class);</span>
+        //créer un patient à partir de son id(patId)
+<span class="fc" id="L63">        log.info(&quot;Calling endpoint get patient : &quot; + uri);</span>
+<span class="fc" id="L64">        Patient patient = restTemplate.getForObject(uriPatient, Patient.class);</span>
+
+<span class="fc" id="L66">        model.addAttribute(&quot;notes&quot;, notes);</span>
+        //ajouter à model
+<span class="fc" id="L68">        model.addAttribute(&quot;patient&quot;, patient);</span>
+
+<span class="fc" id="L70">        return &quot;note/list&quot;;</span>
+    }
+
+    /**
+     * Send the user to the Add page.
+     * @return the Add page.
+     */
+    @GetMapping(&quot;/note/add/{patId}&quot;)
+    public String add(Model model, @PathVariable Integer patId) {
+        //Retourne l'endpoint note/add qui affiche la page add
+<span class="fc" id="L80">        Note note = new Note();</span>
+<span class="fc" id="L81">        note.setPatId(patId);</span>
+<span class="fc" id="L82">        model.addAttribute(&quot;create&quot;, true);</span>
+<span class="fc" id="L83">        model.addAttribute(&quot;note&quot;, note);</span>
+
+<span class="fc" id="L85">        return &quot;note/form&quot;;</span>
+    }
+
+    /**
+     * Validate the data of the formular and add the new note into the DB.
+     * @param note
+     * @param result
+     * @param model
+     * @return the list page.
+     */
+    @PostMapping(&quot;/note/validate&quot;)
+    public String validate(@Valid Note note, BindingResult result, Model model) {
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (result.hasErrors()) {</span>
+<span class="nc" id="L98">            model.addAttribute(&quot;create&quot;, true);</span>
+<span class="nc" id="L99">            return &quot;note/form&quot;;</span>
+        }
+<span class="fc" id="L101">        String uri = baseUrl + portNote + endpointPatHistory + &quot;/add&quot;;</span>
+
+<span class="fc" id="L103">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L105">        log.info(&quot;Calling endpoint post note : &quot; + uri);</span>
+<span class="fc" id="L106">        restTemplate.postForObject(uri, note, Note.class);</span>
+
+<span class="fc" id="L108">        return &quot;redirect:/notes/&quot; + note.getPatId();</span>
+    }
+
+
+    /**
+     *
+     * @param id
+     * @param model
+     * @return
+     */
+    @GetMapping(&quot;/note/{id}&quot;)
+    public String show(@PathVariable(&quot;id&quot;) Integer id, Model model) {
+<span class="fc" id="L120">        String uri = baseUrl + portNote + endpointNote + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L122">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L124">        log.info(&quot;Calling endpoint get note : &quot; + uri);</span>
+<span class="fc" id="L125">        Note note = restTemplate.getForObject(uri, Note.class);</span>
+<span class="fc" id="L126">        model.addAttribute(&quot;note&quot;, note);</span>
+
+<span class="fc" id="L128">        return &quot;note/show&quot;;</span>
+    }
+
+    /**
+     *  Send the user to the update page.
+     * @param id
+     * @param model
+     * @return the update page
+     */
+    @GetMapping(&quot;/note/update/{id}&quot;)
+    public String showUpdateForm(@PathVariable(&quot;id&quot;) Integer id, Model model) {
+<span class="fc" id="L139">        String uri = baseUrl + portNote + endpointNote + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L141">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L143">        log.info(&quot;Calling endpoint get note : &quot; + uri);</span>
+<span class="fc" id="L144">        Note note = restTemplate.getForObject(uri, Note.class);</span>
+<span class="fc" id="L145">        model.addAttribute(&quot;note&quot;, note);</span>
+<span class="fc" id="L146">        model.addAttribute(&quot;create&quot;, false);</span>
+
+<span class="fc" id="L148">        return &quot;note/form&quot;;</span>
+    }
+
+    /**
+     * Check the required fields and save the update
+     * @param id
+     * @param note
+     * @param result
+     * @param model
+     * @return the list page.
+     */
+    @PostMapping(&quot;/note/update/{id}&quot;)
+    public String updateNote(@PathVariable(&quot;id&quot;) Integer id, @Valid Note note,
+                              BindingResult result, Model model) {
+        // TODO: check required fields, if valid call service to update Note and return Note list
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        if (result.hasErrors()) {</span>
+<span class="nc" id="L164">            model.addAttribute(&quot;create&quot;, false);</span>
+
+            //Retourne l'endpoint note/update qui affiche la page update
+<span class="nc" id="L167">            return &quot;note/form&quot;;</span>
+        }
+
+<span class="fc" id="L170">        String uri = baseUrl + portNote + endpointNote + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L172">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L174">        log.info(&quot;Calling endpoint put note : &quot; + uri);</span>
+<span class="fc" id="L175">        restTemplate.put(uri, note, Note.class);</span>
+
+        //Retourne l'endpoint note/list qui affiche la page list
+<span class="fc" id="L178">        return &quot;redirect:/notes/&quot; + note.getPatId();</span>
+    }
+
+    /**
+     * Delete the note.
+     * @param id
+     * @return the list page.
+     */
+    @GetMapping(&quot;/note/delete/{id}&quot;)
+    public String deleteNote(@PathVariable(&quot;id&quot;) Integer id, @RequestParam Integer patId) {
+<span class="fc" id="L188">        String uri = baseUrl + portNote + endpointNote + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L190">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L192">        log.info(&quot;Calling endpoint delete note : &quot; + uri);</span>
+<span class="fc" id="L193">        restTemplate.delete(uri);</span>
+
+        //Retourne l'endpoint note/list qui affiche la page list
+<span class="fc" id="L196">        return &quot;redirect:/notes/&quot; + patId;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

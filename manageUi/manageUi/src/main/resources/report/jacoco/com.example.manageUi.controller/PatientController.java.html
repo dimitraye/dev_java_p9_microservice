@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageUi</a> &gt; <a href="index.source.html" class="el_package">com.example.manageUi.controller</a> &gt; <span class="el_source">PatientController.java</span></div><h1>PatientController.java</h1><pre class="source lang-java linenums">package com.example.manageUi.controller;
+
+import com.example.manageUi.model.Patient;
+import com.example.manageUi.service.ConfDockerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestTemplate;
+
+import javax.validation.Valid;
+
+/**
+ * Manage the requests linked to a Patient
+ */
+<span class="fc" id="L21">@Slf4j</span>
+@Controller
+public class PatientController {
+
+<span class="fc" id="L25">    private static String baseUrl = &quot;http://localhost&quot;;</span>
+<span class="fc" id="L26">    private static String portPatient = &quot;:8081&quot;;</span>
+<span class="fc" id="L27">    private static String endpointPatient = &quot;/patient&quot;;</span>
+    private static String urlEndpoint;
+
+    ObjectMapper mapper;
+
+
+<span class="fc" id="L33">     PatientController(ConfDockerService confDockerService) {</span>
+<span class="fc" id="L34">         mapper = new ObjectMapper();</span>
+
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">         if (confDockerService.isDocker()) {</span>
+<span class="nc" id="L37">             baseUrl = &quot;http://host.docker.internal&quot;;</span>
+<span class="nc" id="L38">             log.info(&quot;base_url in patientcontroller &quot; + baseUrl);</span>
+         }
+
+<span class="fc" id="L41">         urlEndpoint = baseUrl + portPatient + endpointPatient;</span>
+<span class="fc" id="L42">     }</span>
+    /**
+     * Return the list page and the list of patient with it.
+     * @param model
+     * @return list page
+     */
+    @RequestMapping(&quot;/patients&quot;)
+    public String home(Model model)
+    {
+<span class="fc" id="L51">        String uri = urlEndpoint + &quot;s&quot;;</span>
+
+<span class="fc" id="L53">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L55">        log.info(&quot;Calling endpoint get patients : &quot; + uri);</span>
+<span class="fc" id="L56">        Patient[] patients = restTemplate.getForObject(uri, Patient[].class);</span>
+
+<span class="fc" id="L58">        model.addAttribute(&quot;patients&quot;, patients);</span>
+<span class="fc" id="L59">        return &quot;patient/list&quot;;</span>
+    }
+
+    /**
+     * Send the user to the Add page.
+     * @return the Add page.
+     */
+    @GetMapping(&quot;/patient/add&quot;)
+    public String add(Model model, Patient patient) {
+        //Retourne l'endpoint patient/add qui affiche la page add
+<span class="fc" id="L69">        model.addAttribute(&quot;create&quot;, true);</span>
+
+<span class="fc" id="L71">        return &quot;patient/form&quot;;</span>
+    }
+
+    /**
+     * Validate the data of the formular and add the new patient into the DB.
+     * @param patient
+     * @param result
+     * @param model
+     * @return the list page.
+     */
+    @PostMapping(&quot;/patient/validate&quot;)
+    public String validate(@Valid Patient patient, BindingResult result, Model model) {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (result.hasErrors()) {</span>
+<span class="nc" id="L84">            model.addAttribute(&quot;create&quot;, true);</span>
+<span class="nc" id="L85">            return &quot;patient/form&quot;;</span>
+        }
+<span class="fc" id="L87">        String uri = urlEndpoint + &quot;/add&quot;;</span>
+
+<span class="fc" id="L89">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L91">        log.info(&quot;Calling endpoint post patient : &quot; + uri);</span>
+<span class="fc" id="L92">        restTemplate.postForObject(uri, patient, Patient.class);</span>
+
+<span class="fc" id="L94">        return &quot;redirect:/patients&quot;;</span>
+    }
+
+
+    /**
+     *
+     * @param id
+     * @param model
+     * @return
+     */
+    @GetMapping(&quot;/patient/{id}&quot;)
+    public String show(@PathVariable(&quot;id&quot;) Integer id, Model model) {
+<span class="fc" id="L106">        String uri = urlEndpoint + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L108">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L110">        log.info(&quot;Calling endpoint get patient : &quot; + uri);</span>
+<span class="fc" id="L111">        Patient patient = restTemplate.getForObject(uri, Patient.class);</span>
+<span class="fc" id="L112">        model.addAttribute(&quot;patient&quot;, patient);</span>
+
+<span class="fc" id="L114">        return &quot;patient/show&quot;;</span>
+    }
+
+    /**
+     *  Send the user to the update page.
+     * @param id
+     * @param model
+     * @return the update page
+     */
+    @GetMapping(&quot;/patient/update/{id}&quot;)
+    public String showUpdateForm(@PathVariable(&quot;id&quot;) Integer id, Model model) {
+<span class="fc" id="L125">        String uri = urlEndpoint + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L127">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L129">        log.info(&quot;Calling endpoint get patient : &quot; + uri);</span>
+<span class="fc" id="L130">        Patient patient = restTemplate.getForObject(uri, Patient.class);</span>
+<span class="fc" id="L131">        model.addAttribute(&quot;patient&quot;, patient);</span>
+<span class="fc" id="L132">        model.addAttribute(&quot;create&quot;, false);</span>
+
+<span class="fc" id="L134">        return &quot;patient/form&quot;;</span>
+    }
+
+    /**
+     * Check the required fields and save the update
+     * @param id
+     * @param patient
+     * @param result
+     * @param model
+     * @return the list page.
+     */
+    @PostMapping(&quot;/patient/update/{id}&quot;)
+    public String updatePatient(@PathVariable Integer id, @Valid Patient patient,
+                              BindingResult result, Model model) {
+        // TODO: check required fields, if valid call service to update Patient and return Patient list
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (result.hasErrors()) {</span>
+<span class="nc" id="L150">            model.addAttribute(&quot;create&quot;, false);</span>
+
+            //Retourne l'endpoint patient/update qui affiche la page update
+<span class="nc" id="L153">            return &quot;patient/form&quot;;</span>
+        }
+
+<span class="fc" id="L156">        String uri = urlEndpoint + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L158">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L160">        log.info(&quot;Calling endpoint put patient : &quot; + uri);</span>
+<span class="fc" id="L161">        restTemplate.put(uri, patient, Patient.class);</span>
+
+        //Retourne l'endpoint patient/list qui affiche la page list
+<span class="fc" id="L164">        return &quot;redirect:/patients&quot;;</span>
+    }
+
+    /**
+     * Delete the patient.
+     * @param id
+     * @return the list page.
+     */
+    @GetMapping(&quot;/patient/delete/{id}&quot;)
+    public String deletePatient(@PathVariable Integer id) {
+<span class="fc" id="L174">        String uri = urlEndpoint + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L176">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L178">        log.info(&quot;Calling endpoint delete patient : &quot; + uri);</span>
+<span class="fc" id="L179">        restTemplate.delete(uri);</span>
+
+        //Retourne l'endpoint patient/list qui affiche la page list
+<span class="fc" id="L182">        return &quot;redirect:/patients&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
