@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssessController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageAssesment</a> &gt; <a href="index.source.html" class="el_package">com.example.manageAssesment.controller</a> &gt; <span class="el_source">AssessController.java</span></div><h1>AssessController.java</h1><pre class="source lang-java linenums">package com.example.manageAssesment.controller;
+
+import com.example.manageAssesment.model.Note;
+import com.example.manageAssesment.model.Patient;
+import com.example.manageAssesment.service.ConfDockerService;
+import com.example.manageAssesment.service.IAssesService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+/**
+ * Manage the requests linked to an Assessment
+ */
+
+<span class="fc" id="L19">@Slf4j</span>
+@RestController
+public class AssessController {
+
+    private final IAssesService assesService;
+    private final ConfDockerService confDockerService;
+<span class="fc" id="L25">    private static String baseUrl = &quot;http://localhost&quot;;</span>
+<span class="fc" id="L26">    private static String portNote = &quot;:8082&quot;;</span>
+<span class="fc" id="L27">    private static String endpointNote = &quot;/note&quot;;</span>
+<span class="fc" id="L28">    private static String endpointPatHistory = &quot;/patHistory&quot;;</span>
+<span class="fc" id="L29">    private static String portPatient = &quot;:8081&quot;;</span>
+<span class="fc" id="L30">    private static String endpointPatient = &quot;/patient&quot;;</span>
+
+    private static String urlEndpoint;
+
+
+    /*AssessController(ConfDockerService confDockerService) {
+        if (confDockerService.isDocker()) {
+            baseUrl = &quot;http://host.docker.internal&quot;;
+            log.info(&quot;base_url in notecontroller &quot; + baseUrl);
+        }
+    }*/
+
+<span class="fc" id="L42">    public AssessController(IAssesService assesService, ConfDockerService confDockerService) {</span>
+<span class="fc" id="L43">        this.assesService = assesService;</span>
+<span class="fc" id="L44">        this.confDockerService = confDockerService;</span>
+
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (confDockerService.isDocker()) {</span>
+<span class="nc" id="L47">            baseUrl = &quot;http://host.docker.internal&quot;;</span>
+<span class="nc" id="L48">            log.info(&quot;base_url in notecontroller &quot; + baseUrl);</span>
+        }
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * Generate a report based on the patient's notes and informations
+     * @param patId
+     * @return a report
+     */
+    @RequestMapping(&quot;assess/{patId}&quot;)
+    public String generateReport(@PathVariable Integer patId) {
+        //uri to access a patient
+<span class="fc" id="L60">        String uriPatient = baseUrl + portPatient + endpointPatient + &quot;/&quot; + patId;</span>
+
+<span class="fc" id="L62">        RestTemplate restTemplate = new RestTemplate();</span>
+
+<span class="fc" id="L64">        log.info(&quot;Calling endpoint get patient : &quot; + uriPatient);</span>
+<span class="fc" id="L65">        Patient patient = restTemplate.getForObject(uriPatient, Patient.class);</span>
+
+        //uri to access the notes of a patient
+<span class="fc" id="L68">        String uriNote = baseUrl + portNote + endpointPatHistory + &quot;?patId=&quot; + patId;</span>
+
+<span class="fc" id="L70">        log.info(&quot;Calling endpoint get notes : &quot; + uriNote);</span>
+        //list of all the notes of a patient
+<span class="fc" id="L72">        Note[] notes = restTemplate.getForObject(uriNote, Note[].class);</span>
+
+        //evaluate the risk of diabetes based of the notes of a patient
+<span class="fc" id="L75">        String risk = assesService.evaluateRisk(patient, List.of(notes));</span>
+        //generate a report
+<span class="fc" id="L77">        String report = assesService.generateReport(patient, risk);</span>
+<span class="fc" id="L78">            return report;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

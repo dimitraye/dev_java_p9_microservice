@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssessServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageAssesment</a> &gt; <a href="index.source.html" class="el_package">com.example.manageAssesment.service</a> &gt; <span class="el_source">AssessServiceImpl.java</span></div><h1>AssessServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.manageAssesment.service;
+
+import com.example.manageAssesment.model.MedicalTerms;
+import com.example.manageAssesment.model.Note;
+import com.example.manageAssesment.model.RiskLevel;
+import com.example.manageAssesment.model.Patient;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+
+/**
+ * Cette classe implémente l'interface {@link IAssesService} et fournit des méthodes pour évaluer le risque
+ * de diabète chez un patient et générer un rapport en fonction des informations du patient et des notes médicales.
+ */
+@Service
+<span class="fc" id="L19">public class AssessServiceImpl implements IAssesService{</span>
+
+    public static  final String NONE = &quot;None&quot;;
+    public static  final String BORDELINE = &quot;Borderline&quot;;
+    public static  final String IN_DANGER = &quot;In danger&quot;;
+    public static  final String EARLY_ONSET = &quot;Early onset&quot;;
+    public static  final String UNKNOWN = &quot;Unknown&quot;;
+
+    @Override
+    public String evaluateRisk(Patient patient, List&lt;Note&gt; notes) {
+<span class="fc" id="L29">        int nbFactors = nbTermsInNotes(notes);</span>
+        String riskLevel;
+
+        //Cas 1
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        boolean isNone = nbFactors == 0;</span>
+        //Cas 2
+<span class="fc bfc" id="L35" title="All 4 branches covered.">        boolean isBorderline = patient.isOlderthan30() &amp;&amp; nbFactors  &gt; 1;</span>
+        //Cas 3
+<span class="pc bpc" id="L37" title="1 of 6 branches missed.">        boolean isDanger1 = patient.isMale() &amp;&amp; patient.isYougerthan30() &amp;&amp; nbFactors &gt; 2;</span>
+<span class="pc bpc" id="L38" title="3 of 6 branches missed.">        boolean isDanger2 = patient.isFemale() &amp;&amp; patient.isYougerthan30() &amp;&amp; nbFactors &gt; 3 ;</span>
+<span class="fc bfc" id="L39" title="All 4 branches covered.">        boolean isDanger3 = patient.isOlderthan30() &amp;&amp; nbFactors &gt; 5;</span>
+        //Cas 4
+<span class="fc bfc" id="L41" title="All 6 branches covered.">        boolean isEarlyOnset1 = patient.isMale() &amp;&amp; patient.isYougerthan30() &amp;&amp; nbFactors &gt; 4;</span>
+<span class="pc bpc" id="L42" title="3 of 6 branches missed.">        boolean isEarlyOnset2 = patient.isFemale() &amp;&amp; patient.isYougerthan30() &amp;&amp; nbFactors &gt; 6;</span>
+<span class="fc bfc" id="L43" title="All 4 branches covered.">        boolean isEarlyOnset3 = patient.isOlderthan30() &amp;&amp; nbFactors &gt; 7;</span>
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (isNone){</span>
+<span class="fc" id="L46">            riskLevel = RiskLevel.NONE.getLabel();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        } else if (isEarlyOnset3) {</span>
+<span class="fc" id="L48">            riskLevel = RiskLevel.EARLY_ONSET.getLabel();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        } else if (isDanger3) {</span>
+<span class="fc" id="L50">            riskLevel = RiskLevel.IN_DANGER.getLabel();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        } else if (isBorderline) {</span>
+<span class="fc" id="L52">            riskLevel = RiskLevel.BORDERLINE.getLabel();</span>
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">        } else if (isEarlyOnset1 || isEarlyOnset2) {</span>
+<span class="fc" id="L54">            riskLevel = RiskLevel.EARLY_ONSET.getLabel();</span>
+<span class="pc bpc" id="L55" title="3 of 4 branches missed.">        } else if (isDanger1 || isDanger2) {</span>
+<span class="fc" id="L56">            riskLevel = RiskLevel.IN_DANGER.getLabel();</span>
+        } else {
+<span class="nc" id="L58">            riskLevel = RiskLevel.UNKNOWN.getLabel();</span>
+        }
+
+<span class="fc" id="L61">        return riskLevel;</span>
+    }
+
+    @Override
+    public String generateReport(Patient patient, String risk) {
+<span class="fc" id="L66">        return &quot;Patient: &quot; + patient.getGiven() + &quot; &quot; + patient.getFamily() + &quot; (age &quot; + patient.getAge() + &quot;)&quot; +</span>
+                &quot; diabetes assessment is: &quot; + risk;
+    }
+
+    public int nbTermsInNotes(List&lt;Note&gt; notes){
+
+<span class="fc" id="L72">        Set&lt;String&gt; termSet = new HashSet&lt;&gt;();</span>
+
+<span class="fc" id="L74">        notes.forEach(note -&gt; {</span>
+<span class="fc" id="L75">            MedicalTerms.getAllTerms().forEach(term -&gt; {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">                if (note.getContent().toLowerCase().contains(term.toLowerCase())) {</span>
+<span class="fc" id="L77">                    termSet.add(term);</span>
+                }
+<span class="fc" id="L79">            });</span>
+<span class="fc" id="L80">        });</span>
+<span class="fc" id="L81">        return termSet.size();</span>
+    }
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
