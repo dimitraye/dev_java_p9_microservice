@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NoteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageNote</a> &gt; <a href="index.source.html" class="el_package">com.example.manageNote.controller</a> &gt; <span class="el_source">NoteController.java</span></div><h1>NoteController.java</h1><pre class="source lang-java linenums">package com.example.manageNote.controller;
+
+
+import com.example.manageNote.model.Note;
+import com.example.manageNote.service.ConfDockerService;
+import com.example.manageNote.service.INoteService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
+import com.fasterxml.jackson.databind.type.LogicalType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
+
+/**
+ * Manage the requests linked to a Note
+ */
+<span class="fc" id="L34">@Slf4j</span>
+@RestController
+public class NoteController {
+
+
+    private final INoteService noteService;
+    private final ConfDockerService confDockerService;
+    private final ObjectMapper mapper;
+
+<span class="fc" id="L43">    private static String baseUrl = &quot;http://localhost&quot;;</span>
+<span class="fc" id="L44">    private static String portPatient = &quot;:8081&quot;;</span>
+<span class="fc" id="L45">    private static String endpointPatient = &quot;/patient&quot;;</span>
+
+    private final Validator validator;
+
+
+<span class="fc" id="L50">    public NoteController(INoteService noteService, ConfDockerService confDockerService) {</span>
+<span class="fc" id="L51">        this.noteService = noteService;</span>
+<span class="fc" id="L52">        this.confDockerService = confDockerService;</span>
+<span class="fc" id="L53">        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();</span>
+<span class="fc" id="L54">        validator = factory.getValidator();</span>
+
+<span class="fc" id="L56">        mapper = new ObjectMapper();</span>
+<span class="fc" id="L57">        mapper.registerModule(new JavaTimeModule());</span>
+<span class="fc" id="L58">        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);</span>
+<span class="fc" id="L59">        mapper.coercionConfigFor(LogicalType.Enum)</span>
+<span class="fc" id="L60">                .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);</span>
+
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (confDockerService.isDocker()) {</span>
+<span class="nc" id="L63">            baseUrl = &quot;http://host.docker.internal&quot;;</span>
+<span class="nc" id="L64">            log.info(&quot;base_url in notecontroller &quot; + baseUrl);</span>
+        }
+<span class="fc" id="L66">    }</span>
+
+
+    /**
+     * Find all the notes when calling this endpoint
+     * @return a list of notes
+     */
+    @GetMapping(&quot;/notes&quot;)
+    public List&lt;Note&gt; findAllNotes() {
+<span class="fc" id="L75">        return noteService.findAll();</span>
+    }
+
+    /**
+     *  Find all notes of a patient by using the patient's Id
+     * @param patId
+     * @return a list of notes
+     */
+    @GetMapping(&quot;/patHistory&quot;)
+    public ResponseEntity&lt;List&lt;Note&gt;&gt; findAllByPatId(@RequestParam Integer patId){
+<span class="fc" id="L85">        List&lt;Note&gt; notes = noteService.findByPatId(patId);</span>
+<span class="fc" id="L86">        return new ResponseEntity&lt;&gt;(notes, HttpStatus.OK);</span>
+    }
+
+    /**
+     * Find a note based on its Id when calling this endpoint
+     * @param id
+     * @return the page that present the details of the note
+     */
+    @GetMapping(&quot;/note/{id}&quot;)
+    public ResponseEntity&lt;Note&gt; find(@PathVariable Integer id){
+<span class="fc" id="L96">        Note noteFromDB = noteService.findNoteById(id).orElse(null);</span>
+
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if(noteFromDB == null) {</span>
+<span class="nc" id="L99">            log.error(&quot;Error : id Note doesn't exist in the Data Base.&quot;);</span>
+<span class="nc" id="L100">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="fc" id="L103">        log.info(&quot;Returning the note's informations&quot;);</span>
+<span class="fc" id="L104">        return new ResponseEntity&lt;&gt;(noteFromDB, HttpStatus.OK);</span>
+    }
+
+
+    /**
+     * Manage the creation of a note when calling this endpoint
+     * @param body
+     * @return the page that allow to create a note
+     * @throws JsonProcessingException
+     */
+    @PostMapping(&quot;/patHistory/add&quot;)
+    public ResponseEntity&lt;Object&gt; addNote(@RequestBody String body) throws JsonProcessingException {
+
+<span class="fc" id="L117">        log.info(&quot;Converting request body to Json&quot;);</span>
+<span class="fc" id="L118">        String noteJson = noteService.paramTojson(body);</span>
+<span class="fc" id="L119">        log.info(&quot;Converting json to Note object&quot;);</span>
+<span class="fc" id="L120">        Note note = mapper.readValue(noteJson, Note.class);</span>
+<span class="fc" id="L121">        note.setCreationDate(new Date());</span>
+
+<span class="fc" id="L123">        log.info(&quot;Validation before save&quot;);</span>
+<span class="fc" id="L124">        ResponseEntity&lt;Object&gt; errorResponse = getValidationErrors(note);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (errorResponse != null) {</span>
+<span class="nc" id="L126">            return errorResponse;</span>
+        }
+
+<span class="fc" id="L129">        String uri = baseUrl + portPatient + endpointPatient + &quot;/exist/&quot; + note.getPatId();</span>
+
+
+<span class="fc" id="L132">        Boolean patientExist = noteService.checkPatient(uri);</span>
+
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (!patientExist) {</span>
+<span class="nc" id="L135">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="fc" id="L138">        log.info(&quot;Saving the new note&quot;);</span>
+<span class="fc" id="L139">        return  new ResponseEntity&lt;&gt;(noteService.save(note), HttpStatus.CREATED);</span>
+    }
+
+
+    /**
+     * Manage the update of a note when calling this endpoint
+     * @param id
+     * @param note
+     * @return the page that allow to update a note
+     */
+    @PutMapping(&quot;/note/{id}&quot;)
+    public ResponseEntity&lt;Object&gt; update(@PathVariable Integer id, @RequestBody Note note) {
+
+<span class="fc" id="L152">        Note noteFromDB = noteService.findNoteById(id).get();</span>
+
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        if(noteFromDB == null) {</span>
+<span class="nc" id="L155">            log.error(&quot;Error : Note already  exist in the Data Base.&quot;);</span>
+<span class="nc" id="L156">            return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+        }
+<span class="fc" id="L158">        log.debug(&quot;Set properties in the object noteFromDB.&quot;);</span>
+<span class="fc" id="L159">        noteFromDB.setContent(note.getContent());</span>
+
+
+<span class="fc" id="L162">        log.info(&quot;Validation before save&quot;);</span>
+<span class="fc" id="L163">        ResponseEntity&lt;Object&gt; errorResponse = getValidationErrors(note);</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (errorResponse != null) {</span>
+<span class="nc" id="L165">            return errorResponse;</span>
+        }
+
+<span class="fc" id="L168">        log.info(&quot;Updating a note&quot;);</span>
+<span class="fc" id="L169">        return new ResponseEntity&lt;&gt;(noteService.save(noteFromDB), HttpStatus.OK);</span>
+    }
+
+
+    /**
+     * Manage the erasure of a note when calling this endpoint
+     * @param id
+     * @return the notes page
+     */
+    @DeleteMapping(&quot;/note/{id}&quot;)
+    public ResponseEntity&lt;HttpStatus&gt; delete(@PathVariable Integer id){
+
+
+        try {
+<span class="fc" id="L183">            noteService.delete(id);</span>
+<span class="fc" id="L184">            log.info(&quot;Person deleted&quot;);</span>
+<span class="fc" id="L185">            return new ResponseEntity&lt;&gt;(HttpStatus.NO_CONTENT);</span>
+<span class="nc" id="L186">        } catch (Exception e) {</span>
+<span class="nc" id="L187">            return new ResponseEntity&lt;&gt;(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+        }
+    }
+
+
+    public ResponseEntity&lt;Object&gt; getValidationErrors(Note note) {
+<span class="fc" id="L193">        Set&lt;ConstraintViolation&lt;Note&gt;&gt; violations = validator.validate(note);</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        if (!violations.isEmpty()) {</span>
+<span class="nc" id="L195">            AtomicInteger nb = new AtomicInteger(1);</span>
+<span class="nc" id="L196">            JSONObject jsonError = new JSONObject();</span>
+<span class="nc" id="L197">            violations.stream().forEach(v -&gt; {</span>
+                try {
+<span class="nc" id="L199">                    jsonError.put(&quot;Error &quot; + nb.getAndIncrement(), v.getMessage());</span>
+<span class="nc" id="L200">                } catch (JSONException e) {</span>
+<span class="nc" id="L201">                    e.printStackTrace();</span>
+<span class="nc" id="L202">                }</span>
+<span class="nc" id="L203">            });</span>
+<span class="nc" id="L204">            log.error(jsonError.toString());</span>
+<span class="nc" id="L205">            return new ResponseEntity&lt;&gt;(jsonError.toString(), HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L207">        return null;</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
