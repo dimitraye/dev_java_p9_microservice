@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+manageUi,com.example.manageUi.controller,AssessmentController,6,64,1,1,2,20,1,3,0,3
+manageUi,com.example.manageUi.controller,NoteController,22,249,3,3,6,57,3,9,0,9
+manageUi,com.example.manageUi.controller,PatientController,22,190,3,3,6,47,3,9,0,9
+manageUi,com.example.manageUi.model,Gender,0,37,0,0,0,4,0,3,0,3
+manageUi,com.example.manageUi.model,Note,169,41,38,0,1,6,23,10,4,10
+manageUi,com.example.manageUi.model,Patient,273,76,63,1,2,11,36,17,4,17
+manageUi,com.example.manageUi.utils,DateUtils,3,27,0,0,1,6,1,1,1,1
+manageUi,com.example.manageUi,ManageUiApplication,5,3,0,0,2,1,1,1,1,1
+manageUi,com.example.manageUi.service,ConfDockerService,2,22,2,2,0,4,2,3,0,3
