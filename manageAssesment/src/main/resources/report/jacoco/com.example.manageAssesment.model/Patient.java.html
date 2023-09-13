@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Patient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageAssesment</a> &gt; <a href="index.source.html" class="el_package">com.example.manageAssesment.model</a> &gt; <span class="el_source">Patient.java</span></div><h1>Patient.java</h1><pre class="source lang-java linenums">package com.example.manageAssesment.model;
+
+import com.example.manageAssesment.utils.DateUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+import java.util.Date;
+
+/**
+ * Model that represent the patient
+ */
+<span class="pc bnc" id="L14" title="All 62 branches missed.">@Data</span>
+<span class="fc" id="L15">@NoArgsConstructor</span>
+<span class="nc" id="L16">@AllArgsConstructor</span>
+public class Patient {
+<span class="nc" id="L18">    private Integer id;</span>
+<span class="fc" id="L19">    private String given;</span>
+<span class="fc" id="L20">    private String family;</span>
+<span class="fc" id="L21">    private Date dob;</span>
+
+<span class="nc" id="L23">    private Gender sex;</span>
+<span class="nc" id="L24">    private String address;</span>
+<span class="nc" id="L25">    private String phone;</span>
+
+    public Integer getAge(){
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (dob != null) {</span>
+<span class="fc" id="L29">            return DateUtils.calculateAge(dob);</span>
+        }
+<span class="nc" id="L31">        return null;</span>
+    }
+
+    public boolean isOlderthan30() {
+<span class="fc" id="L35">        Integer age = getAge();</span>
+<span class="pc bpc" id="L36" title="1 of 6 branches missed.">        if (age != null &amp; age &gt; 30) {</span>
+<span class="fc" id="L37">            return true;</span>
+        }
+<span class="fc" id="L39">        return false;</span>
+    }
+
+    public boolean isYougerthan30() {
+<span class="fc" id="L43">        Integer age = getAge();</span>
+<span class="pc bpc" id="L44" title="1 of 6 branches missed.">        if (age != null &amp; age &lt; 30) {</span>
+<span class="fc" id="L45">            return true;</span>
+        }
+<span class="fc" id="L47">        return false;</span>
+    }
+
+    public boolean isMale() {
+<span class="fc" id="L51">        return Gender.M.equals(sex);</span>
+    }
+
+    public boolean isFemale() {
+<span class="fc" id="L55">        return Gender.F.equals(sex);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

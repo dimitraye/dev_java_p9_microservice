@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfDockerService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">manageAssesment</a> &gt; <a href="index.source.html" class="el_package">com.example.manageAssesment.service</a> &gt; <span class="el_source">ConfDockerService.java</span></div><h1>ConfDockerService.java</h1><pre class="source lang-java linenums">package com.example.manageAssesment.service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+
+/**
+ * Cette classe fournit un service permettant de détecter si l'application s'exécute dans un environnement Docker
+ * en vérifiant la valeur de la propriété &quot;spring.profiles.active&quot;. Si la valeur contient le mot &quot;docker&quot;, cela
+ * indique que l'application s'exécute dans un conteneur Docker.
+ */
+@Service
+<span class="fc" id="L14">@Slf4j</span>
+<span class="nc" id="L15">public class ConfDockerService {</span>
+
+    @Value(&quot;${spring.profiles.active}&quot;)
+    private String activeProfile;
+
+
+    /**
+     * Vérifie si l'application s'exécute dans un environnement Docker en analysant la valeur de la propriété
+     * &quot;spring.profiles.active&quot;.
+     *
+     * @return true si l'application s'exécute dans un environnement Docker, sinon false.
+     */
+    public boolean isDocker() {
+<span class="nc" id="L28">        log.debug(&quot;activeprofile in confdockerservice : &quot; + activeProfile);</span>
+<span class="nc bnc" id="L29" title="All 4 branches missed.">        return activeProfile != null &amp;&amp; activeProfile.contains(&quot;docker&quot;);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
